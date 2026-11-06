@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+*.log
+
+# Django Media and Static
+media/
+staticfiles/
+.env
+
+# Large Raw and Processed Judicial Data
+data/judicial/raw/
+data/judicial/processed/
+vector-pg18/
+*.zip
+
+# Preserve manifests
+!data/judicial/manifests/
+!data/judicial/manifests/*
+

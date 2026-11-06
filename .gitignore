@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment Variables
+.env
+*.env
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+Backend/venv/
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# Judicial Large Dataset Storage
+data/judicial/raw/
+data/judicial/processed/
+vector-pg18/
+*.zip
+
+# Keep Manifests & metadata schemas tracked
+!data/judicial/manifests/
+!data/judicial/manifests/*
+
