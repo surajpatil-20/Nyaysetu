@@ -93,6 +93,29 @@ class AssistantService:
                 "disclaimer": DISCLAIMER_TEXT,
             }
 
+        # Step 2.5: Enrich evidence with Case / Court / Bench metadata
+        case_ids = {getattr(ev, "case_id", None) for ev in valid_evidence if getattr(ev, "case_id", None)}
+        cases_by_id = {}
+        if case_ids:
+            try:
+                from apps.cases.models import Case
+                qs = Case.objects.filter(pk__in=case_ids).select_related("court").prefetch_related("case_judges__judge")
+                cases_by_id = {c.pk: c for c in qs}
+            except Exception as exc:
+                logger.warning("Could not prefetch cases for evidence enrichment: %s", exc)
+
+        for ev in valid_evidence:
+            c = cases_by_id.get(getattr(ev, "case_id", None))
+            if c:
+                judges = [cj.judge.name for cj in c.case_judges.all()]
+                ev.bench = ", ".join(judges) if judges else ""
+                ev.court_name = c.court.court_name if c.court else "Supreme Court of India"
+                ev.decision_date = str(c.decision_date) if c.decision_date else ""
+            else:
+                ev.bench = getattr(ev, "bench", "")
+                ev.court_name = getattr(ev, "court_name", "Supreme Court of India")
+                ev.decision_date = getattr(ev, "decision_date", "")
+
         # Step 3: Prompt Construction & LLM Generation
         rag_prompt = build_rag_prompt(query_clean, valid_evidence)
         llm = get_llm_provider()
@@ -125,6 +148,9 @@ class AssistantService:
                 "relevance_score": ev.hybrid_score,
                 "source_name": ev.source_name,
                 "source_url": ev.source_url,
+                "court_name": getattr(ev, "court_name", "Supreme Court of India"),
+                "bench": getattr(ev, "bench", ""),
+                "decision_date": getattr(ev, "decision_date", ""),
             })
 
         return {

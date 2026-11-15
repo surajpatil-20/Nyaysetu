@@ -43,6 +43,7 @@ class EvidenceResult:
     hybrid_score: float
     source_name: Optional[str]
     source_url: Optional[str]
+    full_content: str = ""
 
 
 def _snippet(text: str, query: str, max_len: int = 300) -> str:
@@ -92,7 +93,11 @@ def _keyword_search(query: str, filters: dict, limit: int = 50) -> list:
 
     q = Q()
     for term in terms:
-        q |= Q(content__icontains=term)
+        q |= (
+            Q(content__icontains=term) |
+            Q(document__case__case_title__icontains=term) |
+            Q(document__case__case_number__icontains=term)
+        )
 
     qs = DocumentChunk.objects.select_related(
         "document", "document__case", "document__case__court"
@@ -115,8 +120,11 @@ def _keyword_search(query: str, filters: dict, limit: int = 50) -> list:
     results = []
     for chunk in qs:
         content_lower = chunk.content.lower()
-        matches = sum(content_lower.count(t) for t in terms)
-        distinct_matches = sum(1 for t in terms if t in content_lower)
+        title_lower = (chunk.document.case.case_title or "").lower() if chunk.document and chunk.document.case else ""
+        num_lower = (chunk.document.case.case_number or "").lower() if chunk.document and chunk.document.case else ""
+        text_to_match = f"{content_lower} {title_lower} {num_lower}"
+        matches = sum(text_to_match.count(t) for t in terms)
+        distinct_matches = sum(1 for t in terms if t in text_to_match)
         # Avoid spurious single-term matches on multi-term queries
         if len(terms) >= 3 and distinct_matches < 2:
             continue
@@ -258,6 +266,7 @@ def hybrid_search(
             hybrid_score=round(hybrid_score, 4),
             source_name=doc.source_name or (case.source_name if case else None),
             source_url=doc.source_url or (case.source_url if case else None),
+            full_content=chunk.content or "",
         ))
 
     return results
