@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CaseDetailPage Styles (Legal Case Dossier)
+   CaseDetailPage Styles (Legal Case Dossier - Screen 3)
    ========================================================================== */
 
 .case-detail-container {
@@ -12,7 +12,7 @@
   gap: 1.5rem;
 }
 
-/* Breadcrumb */
+/* Breadcrumb Navigation */
 .case-detail-breadcrumb {
   display: flex;
   align-items: center;
@@ -24,6 +24,7 @@
 .case-detail-breadcrumb a {
   color: var(--text-muted);
   text-decoration: none;
+  font-weight: 500;
   transition: color var(--transition-fast);
 }
 
@@ -31,25 +32,36 @@
   color: var(--blue-600);
 }
 
-.case-detail-breadcrumb span.current {
-  color: var(--text-primary);
-  font-weight: 500;
+.case-detail-breadcrumb .separator {
+  color: var(--border-medium);
+  font-size: 0.75rem;
 }
 
-/* Header Card (Dossier Title & Quick Actions) */
+.case-detail-breadcrumb span.current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Case Header Card */
 .case-detail-header-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1.5rem 1.75rem;
   box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.case-detail-header-top {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
 @media (min-width: 768px) {
-  .case-detail-header-card {
+  .case-detail-header-top {
     flex-direction: row;
     align-items: flex-start;
     justify-content: space-between;
@@ -63,17 +75,17 @@
 }
 
 .case-detail-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 @media (min-width: 640px) {
   .case-detail-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -81,44 +93,62 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
 .case-detail-num-badge {
-  padding: 0.125rem 0.625rem;
-  background-color: var(--blue-50);
-  color: var(--blue-700);
-  border: 1px solid rgba(147, 197, 253, 0.6);
-  border-radius: var(--radius-full);
+  padding: 0.2rem 0.625rem;
+  background-color: #f1f5f9;
+  color: var(--navy-900);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .case-detail-header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   flex-shrink: 0;
 }
 
 .case-detail-btn-pdf {
-  padding: 0.5rem 1rem;
-  background-color: var(--navy-900);
+  padding: 0.5rem 1.125rem;
+  background-color: var(--primary-navy);
   color: #ffffff;
   border-radius: var(--radius-md);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-decoration: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  transition: background-color var(--transition-fast);
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+  box-shadow: 0 1px 2px rgba(17, 72, 107, 0.15);
 }
 
 .case-detail-btn-pdf:hover {
-  background-color: var(--navy-800);
+  background-color: var(--primary-navy-dark);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(17, 72, 107, 0.25);
+}
+
+.case-detail-btn-disabled {
+  padding: 0.5rem 1rem;
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: not-allowed;
 }
 
 .case-detail-btn-share {
@@ -127,27 +157,31 @@
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.4rem;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .case-detail-btn-share:hover {
   background-color: #f8fafc;
+  color: var(--text-primary);
+  border-color: var(--border-medium);
 }
 
-/* Tab Navigation */
+/* Tabs Bar */
 .case-detail-tabs-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.5rem;
   border-bottom: 1px solid var(--border-subtle);
   overflow-x: auto;
   scrollbar-width: none;
+  margin-top: 0.5rem;
+  padding-bottom: 0;
 }
 
 .case-detail-tabs-bar::-webkit-scrollbar {
@@ -155,8 +189,8 @@
 }
 
 .case-detail-tab-btn {
-  padding: 0.625rem 1rem;
-  font-size: 0.75rem;
+  padding: 0.625rem 0.25rem 0.875rem 0.25rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-muted);
   background: transparent;
@@ -175,12 +209,13 @@
 }
 
 .case-detail-tab-btn.active {
-  color: var(--blue-600);
-  border-bottom-color: var(--blue-600);
+  color: var(--primary-navy);
+  border-bottom-color: var(--primary-navy);
+  font-weight: 700;
 }
 
-/* Dossier Grid */
-.case-detail-grid {
+/* Overview 2-Column Layout */
+.case-detail-overview-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
@@ -188,57 +223,117 @@
 }
 
 @media (min-width: 1024px) {
-  .case-detail-grid {
-    grid-template-columns: 360px 1fr;
+  .case-detail-overview-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-/* Metadata Dossier Card */
-.case-detail-meta-card {
+/* Left Column: Case Information Table Card */
+.case-info-table-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
   box-shadow: var(--shadow-xs);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  overflow: hidden;
 }
 
-.case-detail-meta-heading {
-  font-size: 0.875rem;
+.case-info-table-header {
+  padding: 1rem 1.25rem;
+  font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--navy-900);
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: #fafbfc;
+}
+
+.case-info-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
   border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 0.5rem;
-  margin: 0;
 }
 
-.case-detail-meta-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  font-size: 0.75rem;
+.case-info-row:last-child {
+  border-bottom: none;
 }
 
-.case-detail-meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.case-info-row:nth-child(even) {
+  background-color: #fbfcfe;
 }
 
-.case-detail-meta-label {
+.case-info-label {
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
-.case-detail-meta-val {
+.case-info-val {
   color: var(--text-primary);
   font-weight: 500;
 }
 
-/* Summary / Content Card */
-.case-detail-content-card {
+.case-info-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #e6f8ee;
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Right Column: Case Summary & Takeaways */
+.case-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.case-summary-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.case-card-heading {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  margin: 0;
+}
+
+.case-summary-text {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.case-takeaways-list {
+  margin: 0;
+  padding-left: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.case-takeaways-list li::marker {
+  color: var(--primary-navy);
+}
+
+/* Secondary Tabs Container */
+.case-tab-content-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
@@ -249,16 +344,132 @@
   gap: 1.25rem;
 }
 
-.case-detail-section-title {
-  font-size: 1rem;
+.case-doc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background-color: #fafbfc;
+  transition: border-color var(--transition-fast);
+}
+
+.case-doc-item:hover {
+  border-color: #cbd5e1;
+}
+
+.case-doc-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.case-doc-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background-color: #fef2f2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.case-doc-title {
+  font-size: 0.8125rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
-.case-detail-description-text {
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  color: var(--text-secondary);
+.case-doc-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0 0 0;
+}
+
+.case-doc-download-btn {
+  padding: 0.375rem 0.875rem;
+  background-color: #eff6ff;
+  color: var(--blue-700);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.case-doc-download-btn:hover {
+  background-color: var(--blue-700);
+  color: #ffffff;
+}
+
+/* Related Cases Grid */
+.case-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .case-related-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.case-related-card {
+  padding: 1.125rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all var(--transition-fast);
+}
+
+.case-related-card:hover {
+  border-color: var(--blue-600);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.case-related-docket {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--blue-700);
+  background-color: #eff6ff;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+.case-related-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0;
+}
+
+.case-related-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.case-related-title a:hover {
+  color: var(--blue-600);
+}
+
+.case-related-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

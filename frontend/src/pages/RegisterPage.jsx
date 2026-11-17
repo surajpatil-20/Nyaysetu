@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Scale, Lock, User, Mail, AlertCircle, ArrowRight } from 'lucide-react';
+import { Scale, Lock, User, Mail, AlertCircle } from 'lucide-react';
 import './AuthPages.css';
 
 export default function RegisterPage() {
@@ -49,32 +49,30 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] flex items-center justify-center px-4 py-12 bg-[#F8FAFC]">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="inline-flex p-3 bg-[#0A192F] rounded-xl text-blue-400 shadow-xs">
+    <div className="auth-page-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="auth-brand-icon-box">
             <Scale className="h-7 w-7" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Citizen Registration</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="auth-title">Citizen Registration</h2>
+          <p className="auth-subtitle">
             Create your account. A 6-digit verification OTP will be generated.
           </p>
         </div>
 
         {error && (
-          <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-rose-800 text-xs flex items-start space-x-2">
-            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-rose-600" />
+          <div className="auth-banner-error">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-          <div>
-            <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1 text-[11px]">
-              Username
-            </label>
-            <div className="relative">
-              <User className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-field">
+            <label className="auth-label">Username</label>
+            <div className="auth-input-wrapper">
+              <User className="auth-input-icon" />
               <input
                 type="text"
                 required
@@ -82,17 +80,15 @@ export default function RegisterPage() {
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="citizen_user"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                className="auth-input"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1 text-[11px]">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+          <div className="auth-field">
+            <label className="auth-label">Email Address</label>
+            <div className="auth-input-wrapper">
+              <Mail className="auth-input-icon" />
               <input
                 type="email"
                 required
@@ -100,43 +96,39 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="citizen@example.com"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                className="auth-input"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1 text-[11px]">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+          <div className="auth-field">
+            <label className="auth-label">Password</label>
+            <div className="auth-input-wrapper">
+              <Lock className="auth-input-icon" />
               <input
                 type="password"
                 required
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                placeholder="Minimum 8 characters"
+                className="auth-input"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1 text-[11px]">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+          <div className="auth-field">
+            <label className="auth-label">Confirm Password</label>
+            <div className="auth-input-wrapper">
+              <Lock className="auth-input-icon" />
               <input
                 type="password"
                 required
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs"
+                placeholder="Repeat password"
+                className="auth-input"
               />
             </div>
           </div>
@@ -144,19 +136,18 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-xs transition flex items-center justify-center space-x-1.5 disabled:opacity-50 mt-2"
+            className="auth-submit-btn"
           >
-            <span>{loading ? 'Submitting Registration...' : 'Register'}</span>
-            <ArrowRight className="h-4 w-4" />
+            {loading ? 'Generating OTP...' : 'Register & Verify OTP'}
           </button>
         </form>
 
-        <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
-          <span>Already have a citizen account? </span>
-          <Link to="/login" className="text-blue-600 font-semibold hover:underline">
+        <p className="auth-footer-text">
+          Already registered?{' '}
+          <Link to="/login" className="auth-footer-link">
             Sign In here
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );

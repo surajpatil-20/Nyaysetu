@@ -25,7 +25,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+        <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-[#11486B] selection:text-white">
           <Navbar />
           <main className="flex-grow">
             <Routes>
@@ -35,9 +35,11 @@ export default function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify-otp" element={<VerifyOtpPage />} />
               <Route path="/search" element={<SearchPage />} />
+              <Route path="/cases" element={<Navigate to="/search" replace />} />
               <Route path="/cases/:id" element={<CaseDetailPage />} />
               <Route path="/cases/:id/timeline" element={<TimelinePage />} />
               <Route path="/cases/:id/graph" element={<GraphPage />} />
+              <Route path="/graph" element={<Navigate to="/cases/1/graph" replace />} />
               <Route path="/services" element={<ServicesPage />} />
 
               {/* Protected AI Assistant Route (Requires Citizen Authentication) */}

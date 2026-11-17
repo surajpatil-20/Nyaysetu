@@ -4,10 +4,7 @@ import { documentsApi } from '../api/documents';
 import AppLayout from '../components/AppLayout';
 import {
   FileText,
-  ChevronRight,
   Trash2,
-  CheckCircle2,
-  Clock,
   AlertCircle,
   Copy,
   Check,
@@ -66,9 +63,9 @@ export default function DocumentDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="p-16 text-center space-y-3">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-slate-500 text-xs">Analyzing document extraction & chunks...</p>
+        <div className="doc-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Analyzing document extraction & chunks...</p>
         </div>
       </AppLayout>
     );
@@ -77,15 +74,23 @@ export default function DocumentDetailPage() {
   if (error || !doc) {
     return (
       <AppLayout>
-        <div className="p-12 max-w-lg mx-auto text-center space-y-4">
-          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
-          <h2 className="text-lg font-bold text-slate-800">Document Not Found</h2>
-          <p className="text-xs text-slate-500">{error || 'This document could not be retrieved.'}</p>
+        <div className="doc-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto mb-3" />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Document Not Found</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>{error || 'This document could not be retrieved.'}</p>
           <Link
             to="/documents"
-            className="inline-flex items-center text-xs font-semibold px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--primary-navy)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-md)',
+              textDecoration: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+            }}
           >
-            <span>Return to Documents</span>
+            Return to Documents
           </Link>
         </div>
       </AppLayout>
@@ -96,45 +101,43 @@ export default function DocumentDetailPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="doc-detail-container">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center space-x-1.5 text-xs text-slate-500">
-          <Link to="/documents" className="hover:text-blue-600 transition">My Documents</Link>
-          <ChevronRight className="h-3 w-3 text-slate-400" />
-          <span className="font-semibold text-slate-800 truncate max-w-[240px]">{doc.title}</span>
+        <nav className="doc-detail-breadcrumb">
+          <Link to="/documents">My Documents</Link>
+          <span className="separator">&gt;</span>
+          <span className="current">{doc.title}</span>
         </nav>
 
         {/* Header Card */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center space-x-3.5">
-            <div className="p-3 bg-rose-50 text-rose-600 rounded-xl">
+        <div className="doc-detail-header-card">
+          <div className="doc-detail-left-info">
+            <div className="doc-detail-icon-box">
               <FileText className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                {doc.title?.endsWith('.pdf') ? doc.title : `${doc.title}.pdf`}
+              <h1 className="doc-detail-title">
+                {doc.title?.toLowerCase().endsWith('.pdf') ? doc.title : `${doc.title}.pdf`}
               </h1>
-              <div className="flex items-center space-x-2 mt-1 text-xs text-slate-500">
+              <div className="doc-detail-meta">
                 <span>{doc.file_size ? `${(doc.file_size / (1024 * 1024)).toFixed(2)} MB` : 'PDF Document'}</span>
                 <span>•</span>
                 <span>{doc.page_count || 1} pages</span>
                 <span>•</span>
-                <span className={`px-2 py-0.5 rounded-full font-semibold text-[11px] ${
-                  isCompleted ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
-                }`}>
-                  {doc.status}
+                <span className={`doc-detail-status-pill ${isCompleted ? 'completed' : 'processing'}`}>
+                  {doc.status || 'COMPLETED'}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2.5">
+          <div className="doc-detail-header-actions">
             {doc.file && (
               <a
                 href={doc.file}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition"
+                className="doc-detail-btn-download"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>Download PDF</span>
@@ -143,7 +146,7 @@ export default function DocumentDetailPage() {
             <button
               type="button"
               onClick={handleDelete}
-              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition"
+              className="doc-detail-btn-delete"
               title="Delete Document"
             >
               <Trash2 className="h-4 w-4" />
@@ -153,32 +156,32 @@ export default function DocumentDetailPage() {
 
         {/* AI Summary Card (if available) */}
         {summary && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
+          <div className="doc-detail-card">
+            <h3 className="doc-detail-card-title">
               <BookOpen className="h-4 w-4 text-blue-600" />
-              <span>Automated Legal Analysis & Abstract</span>
+              <span>Automated Legal Analysis &amp; Abstract</span>
             </h3>
-            <p className="text-xs text-slate-700 leading-relaxed font-serif bg-slate-50 p-4 rounded-lg border-l-2 border-blue-500">
+            <p className="doc-detail-summary-box">
               {summary.summary || summary.text || 'Document analysis successfully indexed into private vector space.'}
             </p>
           </div>
         )}
 
         {/* Extracted Text Pane */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-slate-900 text-sm">Extracted Text Content</h3>
+        <div className="doc-detail-card">
+          <div className="doc-detail-card-header">
+            <h3 className="doc-detail-card-title">Extracted Text Content</h3>
             <button
               type="button"
               onClick={copyText}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition"
+              className="doc-detail-btn-copy"
             >
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
               <span>{copied ? 'Copied' : 'Copy Text'}</span>
             </button>
           </div>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 max-h-96 overflow-y-auto text-xs text-slate-700 font-mono whitespace-pre-wrap leading-relaxed">
+          <div className="doc-detail-extracted-text">
             {doc.extracted_text || 'No extracted text available yet.'}
           </div>
         </div>

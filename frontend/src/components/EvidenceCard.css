@@ -1,22 +1,22 @@
 /* ==========================================================================
-   EvidenceCard Component Styles
+   EvidenceCard Component Styles (Hybrid Search Result Dossier Card)
    ========================================================================== */
 
 .evidence-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  padding: 1.25rem 1.5rem;
   box-shadow: var(--shadow-xs);
   transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .evidence-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: #93c5fd;
+  border-color: #cbd5e1;
 }
 
 /* Header & Title */
@@ -28,42 +28,52 @@
 }
 
 .evidence-card-title {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--primary-navy);
   line-height: 1.4;
   margin: 0;
 }
 
-@media (min-width: 640px) {
-  .evidence-card-title {
-    font-size: 1.125rem;
-  }
-}
-
 .evidence-card-title a {
-  color: var(--text-primary);
+  color: var(--primary-navy);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 .evidence-card-title a:hover {
-  color: var(--blue-600);
+  color: var(--blue-500);
 }
 
-/* Score Pill */
+/* Score Pill (Real API Hybrid Score Indicator) */
 .evidence-score-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.125rem 0.625rem;
-  background-color: var(--success-bg);
-  color: var(--success-text);
-  border: 1px solid var(--success-border);
+  gap: 0.3125rem;
+  padding: 0.1875rem 0.625rem;
+  background-color: var(--accent-gold-light);
+  color: var(--accent-gold-text);
+  border: 1px solid var(--accent-gold-border);
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 700;
   flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.evidence-hybrid-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background-color: var(--blue-50);
+  color: var(--primary-navy);
+  border: 1px solid rgba(17, 72, 107, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Metadata Row */
@@ -77,20 +87,20 @@
 }
 
 .evidence-case-num {
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 /* Snippet */
 .evidence-snippet-box {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
   font-family: var(--font-serif);
   color: var(--text-secondary);
-  background-color: rgba(248, 250, 252, 0.8);
+  background-color: #f8fafc;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--blue-600);
+  border-left: 3px solid var(--primary-navy);
   margin: 0;
 }
 
@@ -99,7 +109,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 0.25rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.625rem;
   font-size: 0.75rem;
 }
 
@@ -112,23 +123,14 @@
   color: var(--text-secondary);
   border-radius: var(--radius-xs);
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid var(--border-subtle);
-}
-
-.evidence-doc-title {
-  color: var(--text-muted);
-  font-size: 0.6875rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
 }
 
 .evidence-actions-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .evidence-link-pdf {
@@ -138,17 +140,19 @@
   align-items: center;
   gap: 0.25rem;
   font-weight: 500;
+  font-size: 0.75rem;
   transition: color var(--transition-fast);
 }
 
 .evidence-link-pdf:hover {
-  color: var(--blue-600);
+  color: var(--primary-navy);
 }
 
 .evidence-link-case {
-  color: var(--blue-600);
+  color: var(--primary-navy);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -156,5 +160,5 @@
 }
 
 .evidence-link-case:hover {
-  color: var(--blue-700);
+  color: var(--accent-gold-text);
 }

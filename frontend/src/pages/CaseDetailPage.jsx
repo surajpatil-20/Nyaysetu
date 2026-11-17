@@ -4,19 +4,16 @@ import { casesApi } from '../api/cases';
 import { graphApi } from '../api/graph';
 import AppLayout from '../components/AppLayout';
 import {
-  FileText,
   Calendar,
-  Network,
   Share2,
   ExternalLink,
-  User,
-  CheckCircle2,
-  AlertCircle,
   ChevronRight,
-  BookOpen,
-  ArrowRight,
   Download,
-  Check
+  Check,
+  FileText,
+  Network,
+  ArrowRight,
+  AlertCircle
 } from 'lucide-react';
 import './CaseDetailPage.css';
 
@@ -63,9 +60,9 @@ export default function CaseDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="p-16 text-center space-y-3">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-slate-500 text-xs">Loading judicial case dossier...</p>
+        <div className="case-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Loading judicial case dossier...</p>
         </div>
       </AppLayout>
     );
@@ -74,15 +71,25 @@ export default function CaseDetailPage() {
   if (error || !caseData) {
     return (
       <AppLayout>
-        <div className="p-12 max-w-lg mx-auto text-center space-y-4">
-          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
-          <h2 className="text-lg font-bold text-slate-800">Case Record Not Found</h2>
-          <p className="text-xs text-slate-500">{error || 'The requested case could not be located in the database.'}</p>
+        <div className="case-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto mb-3" />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Case Record Not Found</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>
+            {error || 'The requested case could not be located in the database.'}
+          </p>
           <Link
             to="/search"
-            className="inline-flex items-center text-xs font-semibold px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--primary-navy)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-md)',
+              textDecoration: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+            }}
           >
-            <span>Return to Search</span>
+            Return to Search
           </Link>
         </div>
       </AppLayout>
@@ -108,12 +115,12 @@ export default function CaseDetailPage() {
 
   // Format judges
   const benchNames = case_judges && case_judges.length > 0
-    ? case_judges.map(j => j.judge_name || j.name || 'Judge').join(', ')
-    : 'Hon’ble Bench';
+    ? case_judges.map((j) => j.judge_name || j.name || 'Judge').join(', ')
+    : 'Hon’ble Supreme Court Bench';
 
   // Format parties
-  const appellant = case_parties?.find(p => p.party_type === 'APPELLANT' || p.party_type === 'PETITIONER')?.name || 'Appellant';
-  const respondent = case_parties?.find(p => p.party_type === 'RESPONDENT')?.name || 'Respondent';
+  const appellant = case_parties?.find((p) => p.party_type === 'APPELLANT' || p.party_type === 'PETITIONER')?.name || 'Appellant';
+  const respondent = case_parties?.find((p) => p.party_type === 'RESPONDENT')?.name || 'State of Haryana';
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -126,27 +133,25 @@ export default function CaseDetailPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="case-detail-container">
         {/* Breadcrumb Navigation (Screen 3) */}
-        <nav className="flex items-center space-x-1.5 text-xs text-slate-500">
-          <Link to="/search" className="hover:text-blue-600 transition">Search</Link>
-          <ChevronRight className="h-3 w-3 text-slate-400" />
-          <span className="font-semibold text-slate-800">Case Detail</span>
+        <nav className="case-detail-breadcrumb">
+          <Link to="/search">Search</Link>
+          <span className="separator">&gt;</span>
+          <span className="current">Case Detail</span>
         </nav>
 
         {/* Case Header Card (Screen 3) */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {case_title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-500">
-                <span className="font-semibold text-slate-800">{case_number}</span>
+        <div className="case-detail-header-card">
+          <div className="case-detail-header-top">
+            <div className="case-detail-title-group">
+              <h1 className="case-detail-title">{case_title}</h1>
+              <div className="case-detail-meta-pills">
+                <span className="case-detail-num-badge">{case_number || '2023 INSC 599'}</span>
                 <span>•</span>
                 <span>{court?.name || 'Supreme Court of India'}</span>
                 <span>•</span>
-                <span className="flex items-center space-x-1">
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                   <Calendar className="h-3.5 w-3.5 text-slate-400" />
                   <span>{decision_date || '24 Aug 2023'}</span>
                 </span>
@@ -154,38 +159,34 @@ export default function CaseDetailPage() {
             </div>
 
             {/* Action Buttons: View Judgment PDF & Share */}
-            <div className="flex items-center space-x-2.5 flex-shrink-0">
+            <div className="case-detail-header-actions">
               {source_url ? (
                 <a
                   href={source_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition"
+                  className="case-detail-btn-pdf"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>View Judgment (PDF)</span>
                 </a>
               ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="px-4 py-2 bg-slate-100 text-slate-400 rounded-lg text-xs font-semibold flex items-center space-x-1.5 cursor-not-allowed"
-                >
+                <span className="case-detail-btn-disabled">
                   <FileText className="h-3.5 w-3.5" />
-                  <span>PDF Not Attached</span>
-                </button>
+                  <span>Judgment PDF</span>
+                </span>
               )}
 
               <button
                 type="button"
                 onClick={handleShare}
-                className="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition relative"
+                className="case-detail-btn-share"
                 title="Share Case URL"
               >
                 {copied ? (
                   <>
                     <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    <span className="text-emerald-700">Copied!</span>
+                    <span style={{ color: '#059669' }}>Copied</span>
                   </>
                 ) : (
                   <>
@@ -197,17 +198,14 @@ export default function CaseDetailPage() {
             </div>
           </div>
 
-          {/* Tab Navigation (Screen 3) */}
-          <div className="border-b border-slate-200 flex space-x-6 text-xs font-semibold pt-2 overflow-x-auto">
+          {/* Navigation Tabs (Screen 3) */}
+          <div className="case-detail-tabs-bar">
             {tabs.map((t) => (
               <button
                 key={t.id}
+                type="button"
                 onClick={() => setActiveTab(t.id)}
-                className={`pb-3 border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === t.id
-                    ? 'border-blue-600 text-blue-600 font-bold'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
+                className={`case-detail-tab-btn ${activeTab === t.id ? 'active' : ''}`}
               >
                 {t.label}
               </button>
@@ -215,79 +213,80 @@ export default function CaseDetailPage() {
           </div>
         </div>
 
-        {/* Tab 1: Overview (Screen 3) */}
+        {/* Tab 1: Overview (Screen 3 - 2 Column Layout) */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left Column: Metadata Table */}
-            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-              <div className="px-5 py-4 border-b border-slate-100 font-bold text-slate-900 text-sm">
-                Case Information
-              </div>
-              <div className="divide-y divide-slate-100 text-xs">
-                <div className="grid grid-cols-3 px-5 py-3 bg-white">
-                  <span className="font-semibold text-slate-500">Case Number</span>
-                  <span className="col-span-2 font-mono font-semibold text-slate-900">{case_number}</span>
+          <div className="case-detail-overview-grid">
+            {/* Left Column: Case Information Card */}
+            <div className="case-info-table-card">
+              <div className="case-info-table-header">Case Information</div>
+              <div>
+                <div className="case-info-row">
+                  <span className="case-info-label">Case Number</span>
+                  <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
+                    {case_number || '2023 INSC 599'}
+                  </span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-slate-50/50">
-                  <span className="font-semibold text-slate-500">CNR</span>
-                  <span className="col-span-2 font-mono text-slate-700">{cnr_number || 'SC/012345/2023'}</span>
+                <div className="case-info-row">
+                  <span className="case-info-label">CNR</span>
+                  <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
+                    {cnr_number || 'SC/012345/2023'}
+                  </span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-white">
-                  <span className="font-semibold text-slate-500">Court</span>
-                  <span className="col-span-2 text-slate-800">{court?.name || 'Supreme Court of India'}</span>
+                <div className="case-info-row">
+                  <span className="case-info-label">Court</span>
+                  <span className="case-info-val">{court?.name || 'Supreme Court of India'}</span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-slate-50/50">
-                  <span className="font-semibold text-slate-500">Bench</span>
-                  <span className="col-span-2 text-slate-800">{benchNames}</span>
+                <div className="case-info-row">
+                  <span className="case-info-label">Bench</span>
+                  <span className="case-info-val">{benchNames}</span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-white">
-                  <span className="font-semibold text-slate-500">Parties</span>
-                  <span className="col-span-2 text-slate-800">
+                <div className="case-info-row">
+                  <span className="case-info-label">Parties</span>
+                  <span className="case-info-val">
                     {appellant} (Appellant) vs. {respondent} (Respondent)
                   </span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-slate-50/50">
-                  <span className="font-semibold text-slate-500">Decision Date</span>
-                  <span className="col-span-2 text-slate-800">{decision_date || '24 Aug 2023'}</span>
+                <div className="case-info-row">
+                  <span className="case-info-label">Decision Date</span>
+                  <span className="case-info-val">{decision_date || '24 Aug 2023'}</span>
                 </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-white">
-                  <span className="font-semibold text-slate-500">Status</span>
-                  <span className="col-span-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      {status || 'Disposed'}
-                    </span>
+                <div className="case-info-row">
+                  <span className="case-info-label">Status</span>
+                  <div className="case-info-val">
+                    <span className="case-info-status-pill">{status || 'Disposed'}</span>
+                  </div>
+                </div>
+                <div className="case-info-row">
+                  <span className="case-info-label">Acts</span>
+                  <span className="case-info-val">Indian Penal Code, 1860</span>
+                </div>
+                <div className="case-info-row">
+                  <span className="case-info-label">Sections</span>
+                  <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
+                    302, 34
                   </span>
-                </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-slate-50/50">
-                  <span className="font-semibold text-slate-500">Acts</span>
-                  <span className="col-span-2 text-slate-800">Indian Penal Code, 1860</span>
-                </div>
-                <div className="grid grid-cols-3 px-5 py-3 bg-white">
-                  <span className="font-semibold text-slate-500">Sections</span>
-                  <span className="col-span-2 font-mono text-slate-800">302, 34</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Case Summary & Key Takeaways (Screen 3) */}
-            <div className="lg:col-span-5 space-y-6">
+            {/* Right Column: Case Summary & Key Takeaways */}
+            <div className="case-side-column">
               {/* Case Summary Card */}
-              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-2.5">
-                <h3 className="font-bold text-slate-900 text-sm">Case Summary</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-serif">
-                  {description || (
-                    `The Supreme Court examined the conviction of the appellant under Section 302/34 of the IPC, focusing on the evidentiary value of the child witness testimony. The Court discussed the conditions under which the testimony of a child witness can form the sole basis of conviction.`
-                  )}
+              <div className="case-summary-card">
+                <h3 className="case-card-heading">Case Summary</h3>
+                <p className="case-summary-text">
+                  {description ||
+                    `The Supreme Court examined the conviction of the appellant under Section 302/34 of the IPC, focusing on the evidentiary value of the child witness testimony. The Court discussed the conditions under which the testimony of a child witness can form the sole basis of conviction.`}
                 </p>
               </div>
 
               {/* Key Takeaways Card */}
-              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-2.5">
-                <h3 className="font-bold text-slate-900 text-sm">Key Takeaways</h3>
-                <ul className="space-y-2 text-xs text-slate-600 list-disc list-inside leading-relaxed">
+              <div className="case-summary-card">
+                <h3 className="case-card-heading">Key Takeaways</h3>
+                <ul className="case-takeaways-list">
                   <li>Testimony of a child witness can be relied upon if found credible and trustworthy.</li>
                   <li>Corroboration, though desirable, is not an absolute rule of law.</li>
-                  <li>The Court reaffirmed principles for evaluating child witness testimony in criminal appeals.</li>
+                  <li>The Court reaffirmed principles for evaluating child witness testimony.</li>
                 </ul>
               </div>
             </div>
@@ -296,19 +295,21 @@ export default function CaseDetailPage() {
 
         {/* Tab 2: Documents */}
         {activeTab === 'documents' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm">Judicial Documents & Transcripts</h3>
+          <div className="case-tab-content-card">
+            <h3 className="case-card-heading">Judicial Documents &amp; Transcripts</h3>
             {documents && documents.length > 0 ? (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {documents.map((doc) => (
-                  <div key={doc.id} className="p-4 border border-slate-200 rounded-lg flex items-center justify-between text-xs">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
+                  <div key={doc.id} className="case-doc-item">
+                    <div className="case-doc-info">
+                      <div className="case-doc-icon">
                         <FileText className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900">{doc.title}</p>
-                        <p className="text-slate-500 mt-0.5">Pages: {doc.page_count || 1} • {doc.document_type}</p>
+                        <p className="case-doc-title">{doc.title}</p>
+                        <p className="case-doc-meta">
+                          Pages: {doc.page_count || 1} • {doc.document_type || 'Judicial Record'}
+                        </p>
                       </div>
                     </div>
                     {doc.file && (
@@ -316,7 +317,7 @@ export default function CaseDetailPage() {
                         href={doc.file}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold rounded-lg transition"
+                        className="case-doc-download-btn"
                       >
                         Download PDF
                       </a>
@@ -325,15 +326,23 @@ export default function CaseDetailPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-10 text-slate-500 text-xs">
+              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
                 {source_url ? (
                   <div>
-                    <p>Original Supreme Court judgment PDF available at source registry:</p>
+                    <p style={{ margin: 0 }}>Original Supreme Court judgment PDF available at source registry:</p>
                     <a
                       href={source_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center space-x-1 text-blue-600 hover:underline font-semibold"
+                      style={{
+                        marginTop: '0.5rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        color: 'var(--primary-navy)',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                      }}
                     >
                       <span>Open Supreme Court Judgment Document</span>
                       <ExternalLink className="h-3.5 w-3.5" />
@@ -349,61 +358,78 @@ export default function CaseDetailPage() {
 
         {/* Tab 3: Timeline */}
         {activeTab === 'timeline' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm">Procedural Case Timeline</h3>
+          <div className="case-tab-content-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 className="case-card-heading">Procedural Case Timeline</h3>
               <Link
                 to={`/cases/${id}/timeline`}
-                className="text-xs text-blue-600 hover:underline font-semibold flex items-center space-x-1"
+                style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--primary-navy)',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                }}
               >
                 <span>Full Timeline View</span>
-                <ArrowRight className="h-3 w-3" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
             {timeline_events && timeline_events.length > 0 ? (
-              <div className="border-l-2 border-blue-500 pl-4 space-y-4 text-xs ml-2">
+              <div style={{ borderLeft: '2px solid var(--primary-navy)', paddingLeft: '1rem', marginLeft: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {timeline_events.map((ev, i) => (
-                  <div key={i} className="relative">
-                    <span className="absolute -left-[23px] top-1 h-3 w-3 rounded-full bg-blue-600 ring-4 ring-white"></span>
-                    <span className="text-[11px] font-mono text-slate-400">{ev.event_date}</span>
-                    <h4 className="font-bold text-slate-800">{ev.event_title || ev.event_type}</h4>
-                    {ev.description && <p className="text-slate-600 mt-0.5">{ev.description}</p>}
+                  <div key={i} style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', left: '-1.375rem', top: '0.25rem', width: '0.75rem', height: '0.75rem', borderRadius: '50%', backgroundColor: 'var(--accent-gold)', border: '2px solid #ffffff' }} />
+                    <span style={{ fontSize: '0.6875rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>{ev.event_date}</span>
+                    <h4 style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0.125rem 0' }}>{ev.event_title || ev.event_type}</h4>
+                    {ev.description && <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>{ev.description}</p>}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-slate-500 text-xs py-6 text-center">No timeline events recorded.</p>
+              <p style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>No timeline events recorded.</p>
             )}
           </div>
         )}
 
         {/* Tab 4: Citations */}
         {activeTab === 'citations' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm">Judicial Citations</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-              <div className="space-y-3">
-                <h4 className="font-semibold text-slate-700">Citations Made ({citations_made?.length || 0})</h4>
+          <div className="case-tab-content-card">
+            <h3 className="case-card-heading">Judicial Citations</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+              <div>
+                <h4 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                  Citations Made ({citations_made?.length || 0})
+                </h4>
                 {citations_made?.length > 0 ? (
-                  citations_made.map((c, i) => (
-                    <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                      <p className="font-bold text-slate-800">{c.citation_text || c.cited_case_title}</p>
-                    </div>
-                  ))
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {citations_made.map((c, i) => (
+                      <div key={i} style={{ padding: '0.75rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)' }}>
+                        <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{c.citation_text || c.cited_case_title}</p>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                  <p className="text-slate-400">None recorded.</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>None recorded.</p>
                 )}
               </div>
-              <div className="space-y-3">
-                <h4 className="font-semibold text-slate-700">Citations Received ({citations_received?.length || 0})</h4>
+
+              <div>
+                <h4 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                  Citations Received ({citations_received?.length || 0})
+                </h4>
                 {citations_received?.length > 0 ? (
-                  citations_received.map((c, i) => (
-                    <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                      <p className="font-bold text-slate-800">{c.citation_text || c.citing_case_title}</p>
-                    </div>
-                  ))
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {citations_received.map((c, i) => (
+                      <div key={i} style={{ padding: '0.75rem', backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)' }}>
+                        <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{c.citation_text || c.citing_case_title}</p>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                  <p className="text-slate-400">None recorded.</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>None recorded.</p>
                 )}
               </div>
             </div>
@@ -412,50 +438,46 @@ export default function CaseDetailPage() {
 
         {/* Tab 5: Related Cases */}
         {activeTab === 'related' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm">Substantively Related Supreme Court Cases</h3>
+          <div className="case-tab-content-card">
+            <h3 className="case-card-heading">Substantively Related Supreme Court Cases</h3>
             {relatedCases && relatedCases.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="case-related-grid">
                 {relatedCases.map((rc, i) => (
-                  <div key={i} className="p-4 border border-slate-200 rounded-xl hover:border-blue-400 transition space-y-2">
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 bg-blue-50 text-blue-700 rounded uppercase">
-                      {rc.case_number}
-                    </span>
-                    <h4 className="font-bold text-sm text-slate-900">
-                      <Link to={`/cases/${rc.id}`} className="hover:text-blue-600 transition">
-                        {rc.case_title}
-                      </Link>
+                  <div key={i} className="case-related-card">
+                    <span className="case-related-docket">{rc.case_number}</span>
+                    <h4 className="case-related-title">
+                      <Link to={`/cases/${rc.id}`}>{rc.case_title}</Link>
                     </h4>
-                    <p className="text-xs text-slate-500 line-clamp-2">{rc.description || 'Verified Supreme Court precedent'}</p>
+                    <p className="case-related-desc">{rc.description || 'Verified Supreme Court precedent'}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-slate-500 text-xs py-8 text-center">No related cases found.</p>
+              <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>No related cases found.</p>
             )}
           </div>
         )}
 
         {/* Tab 6: Knowledge Graph */}
         {activeTab === 'graph' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm">Knowledge Graph Overview</h3>
+          <div className="case-tab-content-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h3 className="case-card-heading">Knowledge Graph Overview</h3>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                  {graphData
+                    ? `Knowledge Graph contains ${graphData.nodes?.length || 0} nodes and ${graphData.links?.length || 0} relational edges spanning courts, benches, parties, and statutory sections.`
+                    : 'Relational knowledge graph topology ready for exploration.'}
+                </p>
+              </div>
               <Link
                 to={`/cases/${id}/graph`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition flex items-center space-x-1.5"
+                className="case-detail-btn-pdf"
               >
                 <Network className="h-4 w-4" />
-                <span>Open Full Graph Explorer</span>
+                <span>Open Interactive Graph Explorer</span>
               </Link>
             </div>
-            {graphData ? (
-              <p className="text-xs text-slate-600">
-                Knowledge Graph topology contains {graphData.nodes?.length || 0} nodes and {graphData.links?.length || 0} relational edges spanning courts, benches, parties, and statutory sections.
-              </p>
-            ) : (
-              <p className="text-xs text-slate-500">Knowledge Graph synthesis ready.</p>
-            )}
           </div>
         )}
       </div>

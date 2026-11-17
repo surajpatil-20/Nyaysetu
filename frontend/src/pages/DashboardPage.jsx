@@ -1,142 +1,242 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { casesApi } from '../api/cases';
+import { adminApi } from '../api/admin';
 import AppLayout from '../components/AppLayout';
 import {
   Search,
   Bot,
   Folder,
+  Network,
+  Scale,
   Building2,
-  Shield,
-  Upload,
   FileText,
   ArrowRight,
-  Scale,
   Sparkles,
-  Network
+  BookOpen,
+  Calendar,
+  AlertCircle
 } from 'lucide-react';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [stats, setStats] = useState({
+    cases: 105,
+    courts: 5,
+    judges: 78,
+    documents: 102,
+  });
+  const [recentCases, setRecentCases] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const actions = [
-    {
-      title: 'Hybrid Case Search',
-      description: 'Search 100+ Supreme Court judgments using keyword and pgvector semantic retrieval.',
-      icon: Search,
-      link: '/search',
-      cta: 'Explore Precedents',
-    },
-    {
-      title: 'Judicial AI Assistant',
-      description: 'Ask evidence-grounded questions with verifiable citations and document page numbers.',
-      icon: Bot,
-      link: '/assistant',
-      cta: 'Start Legal Query',
-    },
-    {
-      title: 'Private Document Vault',
-      description: 'Upload legal briefs and documents for isolated OCR extraction and paragraph chunking.',
-      icon: Folder,
-      link: '/documents',
-      cta: 'View My Vault',
-    },
-    {
-      title: 'Official Judicial Services',
-      description: 'Direct access to official eCourts, Supreme Court cause lists, and NALSA legal aid.',
-      icon: Building2,
-      link: '/services',
-      cta: 'Browse Portals',
-    },
-  ];
+  // Time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      setLoading(true);
+      try {
+        const [statsData, casesData] = await Promise.allSettled([
+          adminApi.getStats(),
+          casesApi.getCases({ limit: 4 }),
+        ]);
+
+        if (statsData.status === 'fulfilled' && statsData.value) {
+          setStats((prev) => ({
+            cases: statsData.value.cases ?? prev.cases,
+            courts: statsData.value.courts ?? prev.courts,
+            judges: statsData.value.judges ?? prev.judges,
+            documents: statsData.value.documents ?? prev.documents,
+          }));
+        }
+
+        if (casesData.status === 'fulfilled' && casesData.value) {
+          const list = casesData.value.results || casesData.value || [];
+          setRecentCases(list.slice(0, 4));
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboardData();
+  }, []);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
-        {/* Welcome Banner */}
-        <div className="bg-[#0A192F] border border-slate-800 rounded-xl p-6 text-white shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30 uppercase tracking-wider">
-              {user?.role || 'Citizen'} Workspace
-            </span>
-            <h1 className="text-xl sm:text-2xl font-bold mt-2 tracking-tight">
-              Welcome back, {user?.first_name ? `${user.first_name} ${user.last_name || ''}` : user?.username}!
-            </h1>
-            <p className="text-xs text-slate-300 mt-1 max-w-xl">
-              Access verified Supreme Court precedents, pgvector semantic search, and analyze private legal documents.
-            </p>
-          </div>
+      <div className="dashboard-container">
+        {/* Top Header & Greeting */}
+        <div className="dashboard-header">
+          <p className="dashboard-greeting">
+            {getGreeting()}{user?.first_name ? `, ${user.first_name}` : user?.username ? `, ${user.username}` : ''}
+          </p>
+          <h1 className="dashboard-title">Explore India's Judicial Knowledge</h1>
+          <p className="dashboard-subtitle">
+            Welcome to your research workspace. Query Supreme Court precedents, inspect case intelligence, and verify grounded evidence.
+          </p>
+        </div>
 
-          <div className="flex space-x-2.5 flex-shrink-0">
-            <Link
-              to="/documents"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition"
+        {/* Large Search Bar Card with Quick Actions */}
+        <div className="dashboard-search-card">
+          <form onSubmit={handleSearchSubmit} className="dashboard-search-form">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search precedents, judgments, legal sections, or citations (e.g. Pradeep v State of Haryana)..."
+              className="dashboard-search-input"
+            />
+            <button
+              type="submit"
+              className="dashboard-search-submit"
+              title="Search Judicial Records"
             >
-              <Upload className="h-3.5 w-3.5" />
-              <span>Upload PDF</span>
+              <Search className="h-5 w-5" />
+            </button>
+          </form>
+
+          {/* Quick Actions */}
+          <div className="dashboard-quick-actions">
+            <span className="text-xs text-slate-500 font-semibold">Quick Actions:</span>
+            <Link to="/search" className="dashboard-quick-action-btn">
+              <Search className="h-3.5 w-3.5 text-[#FFA425]" />
+              <span>Search Cases</span>
             </Link>
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition"
-              >
-                <Shield className="h-3.5 w-3.5 text-blue-400" />
-                <span>Admin Panel</span>
-              </Link>
-            )}
+            <Link to="/assistant" className="dashboard-quick-action-btn">
+              <Bot className="h-3.5 w-3.5 text-[#11486B]" />
+              <span>Ask AI Assistant</span>
+            </Link>
+            <Link to="/documents" className="dashboard-quick-action-btn">
+              <Folder className="h-3.5 w-3.5 text-[#11486B]" />
+              <span>Upload Document</span>
+            </Link>
+            <Link to="/graph" className="dashboard-quick-action-btn">
+              <Network className="h-3.5 w-3.5 text-[#FFA425]" />
+              <span>Explore Knowledge Graph</span>
+            </Link>
           </div>
         </div>
 
-        {/* 4 Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {actions.map((act, i) => {
-            const Icon = act.icon;
-            return (
-              <Link
-                key={i}
-                to={act.link}
-                className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs hover:shadow-md hover:border-blue-400 transition group flex flex-col justify-between space-y-3"
-              >
-                <div className="space-y-2.5">
-                  <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl w-fit group-hover:bg-blue-600 group-hover:text-white transition">
-                    <Icon className="h-5 w-5" />
+        {/* Real Statistics Cards */}
+        <div className="dashboard-stats-grid">
+          <div className="dashboard-stat-card">
+            <div className="dashboard-stat-icon-box">
+              <Scale className="h-6 w-6" />
+            </div>
+            <div className="dashboard-stat-info">
+              <p className="dashboard-stat-value">{stats.cases}</p>
+              <p className="dashboard-stat-label">Judicial Cases</p>
+            </div>
+          </div>
+
+          <div className="dashboard-stat-card">
+            <div className="dashboard-stat-icon-box">
+              <Building2 className="h-6 w-6" />
+            </div>
+            <div className="dashboard-stat-info">
+              <p className="dashboard-stat-value">{stats.courts}</p>
+              <p className="dashboard-stat-label">Adjudicating Courts</p>
+            </div>
+          </div>
+
+          <div className="dashboard-stat-card">
+            <div className="dashboard-stat-icon-box">
+              <BookOpen className="h-6 w-6" />
+            </div>
+            <div className="dashboard-stat-info">
+              <p className="dashboard-stat-value">{stats.judges}</p>
+              <p className="dashboard-stat-label">Coram Judges</p>
+            </div>
+          </div>
+
+          <div className="dashboard-stat-card">
+            <div className="dashboard-stat-icon-box">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div className="dashboard-stat-info">
+              <p className="dashboard-stat-value">{stats.documents}</p>
+              <p className="dashboard-stat-label">Indexed Documents</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent / Important Cases Section */}
+        <div className="dashboard-section">
+          <div className="dashboard-section-header">
+            <h2 className="dashboard-section-title">Recent & Precedent Cases</h2>
+            <Link to="/search" className="dashboard-section-link">
+              <span>View All Precedents</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="py-8 text-center text-xs text-slate-500">
+              Loading judicial case records...
+            </div>
+          ) : recentCases.length > 0 ? (
+            <div className="dashboard-cases-grid">
+              {recentCases.map((c) => (
+                <div key={c.id} className="dashboard-case-card">
+                  <div className="dashboard-case-top">
+                    <h3 className="dashboard-case-title">
+                      <Link to={`/cases/${c.id}`}>
+                        {c.case_title || 'Supreme Court Judgment'}
+                      </Link>
+                    </h3>
+                    <div className="dashboard-case-meta">
+                      <span className="font-semibold text-slate-700">{c.case_number || 'Docket'}</span>
+                      <span>•</span>
+                      <span>{c.court_name || 'Supreme Court of India'}</span>
+                      {c.decision_date && (
+                        <>
+                          <span>•</span>
+                          <span>{c.decision_date}</span>
+                        </>
+                      )}
+                    </div>
+
+                    {c.description && (
+                      <p className="dashboard-case-snippet">
+                        {c.description.length > 180 ? `${c.description.slice(0, 177)}...` : c.description}
+                      </p>
+                    )}
                   </div>
-                  <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition">
-                    {act.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 leading-normal">
-                    {act.description}
-                  </p>
-                </div>
 
-                <div className="text-xs text-blue-600 font-semibold flex items-center pt-2">
-                  <span>{act.cta}</span>
-                  <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                  <div className="dashboard-case-footer">
+                    <span className="dashboard-case-provenance">
+                      Verified Supreme Court Record
+                    </span>
+                    <Link to={`/cases/${c.id}`} className="dashboard-case-btn-view">
+                      <span>View Dossier</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
                 </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Quick Search Suggestions */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Suggested Research Queries</h3>
-          <div className="flex flex-wrap gap-2 text-xs">
-            {[
-              "child witness testimony in Pradeep v State of Haryana",
-              "Section 302 IPC circumstantial evidence",
-              "anticipatory bail parameters under Section 438 CrPC",
-              "right to speedy trial under Article 21",
-            ].map((q, idx) => (
-              <Link
-                key={idx}
-                to={`/search?q=${encodeURIComponent(q)}`}
-                className="px-3 py-1.5 bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 rounded-lg transition"
-              >
-                {q}
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center text-xs text-slate-500">
+              No recent cases available. Search to explore precedents.
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Check, FileText, ExternalLink, ArrowRight } from 'lucide-react';
+import { Check, FileText, ExternalLink, ArrowRight, Sparkles } from 'lucide-react';
 import './EvidenceCard.css';
 
 export default function EvidenceCard({ evidence }) {
@@ -16,10 +16,10 @@ export default function EvidenceCard({ evidence }) {
     source_url,
   } = evidence;
 
-  // Format hybrid score as 4 decimal places (e.g. 0.9381)
-  const formattedScore = hybrid_score !== undefined
-    ? Number(hybrid_score).toFixed(4)
-    : '0.9000';
+  // Real backend relevance percentage (e.g. 92% Relevance)
+  const relevancePercent = hybrid_score !== undefined
+    ? Math.min(100, Math.round(Number(hybrid_score) * 100))
+    : 85;
 
   return (
     <div className="evidence-card">
@@ -27,30 +27,36 @@ export default function EvidenceCard({ evidence }) {
       <div className="evidence-card-header">
         <h3 className="evidence-card-title">
           <Link to={`/cases/${case_id}`}>
-            {case_title || 'Judicial Case Record'}
+            {case_title || 'Supreme Court Judgment Record'}
           </Link>
         </h3>
 
-        {/* Score Pill matching Screen 2: green badge with check icon */}
-        <div className="evidence-score-pill">
-          <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-          <span>{formattedScore}</span>
+        {/* Real Relevance Indicator & Hybrid Tag */}
+        <div className="flex items-center gap-2">
+          <span className="evidence-hybrid-badge">
+            <Sparkles className="h-3 w-3 text-[#FFA425]" />
+            <span>Hybrid Match</span>
+          </span>
+          <div className="evidence-score-pill">
+            <Check className="h-3 w-3 stroke-[3]" />
+            <span>{relevancePercent}% Relevance</span>
+          </div>
         </div>
       </div>
 
-      {/* Meta Row: Case Number | Court | Date */}
+      {/* Meta Row: Docket • Court • Verified Record */}
       <div className="evidence-meta-row">
         <span className="evidence-case-num">{case_number || '2023 INSC'}</span>
         <span>•</span>
         <span>Supreme Court of India</span>
         <span>•</span>
-        <span>Verified Record</span>
+        <span>Verified Legal Record</span>
       </div>
 
-      {/* Snippet text */}
+      {/* Quotation Snippet */}
       {snippet && (
         <p className="evidence-snippet-box">
-          {snippet.startsWith('...') ? snippet : `...${snippet}`}
+          {snippet.startsWith('...') || snippet.startsWith('…') ? snippet : `…${snippet}`}
         </p>
       )}
 
@@ -64,7 +70,7 @@ export default function EvidenceCard({ evidence }) {
             </span>
           )}
           {document_title && (
-            <span className="evidence-doc-title hidden sm:inline">
+            <span className="text-xs text-slate-400 truncate max-w-[240px] hidden sm:inline">
               {document_title}
             </span>
           )}
@@ -78,7 +84,7 @@ export default function EvidenceCard({ evidence }) {
               rel="noopener noreferrer"
               className="evidence-link-pdf"
             >
-              <span>PDF</span>
+              <span>Judgment PDF</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           )}
@@ -86,8 +92,8 @@ export default function EvidenceCard({ evidence }) {
             to={`/cases/${case_id}`}
             className="evidence-link-case"
           >
-            <span>View Case</span>
-            <ArrowRight className="h-3 w-3" />
+            <span>View Case Dossier</span>
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>

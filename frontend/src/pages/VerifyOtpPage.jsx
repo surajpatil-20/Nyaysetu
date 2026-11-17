@@ -56,7 +56,6 @@ export default function VerifyOtpPage() {
     if (!/^\d*$/.test(value)) return;
 
     const newDigits = [...digits];
-    // Take the last character typed
     newDigits[index] = value.slice(-1);
     setDigits(newDigits);
     setError('');
@@ -69,7 +68,6 @@ export default function VerifyOtpPage() {
 
   const handleKeyDown = (index, e) => {
     if (e.key === 'Backspace' && !digits[index] && index > 0) {
-      // Focus previous input on backspace
       inputRefs.current[index - 1]?.focus();
     }
   };
@@ -102,7 +100,6 @@ export default function VerifyOtpPage() {
 
     try {
       await verifyOtp(email.trim(), fullOtp);
-      // Navigate to login with success flash message
       navigate('/login', {
         state: { message: 'Account verified successfully. Please log in.' },
         replace: true,
@@ -128,10 +125,8 @@ export default function VerifyOtpPage() {
     try {
       await resendOtp(email.trim());
       setSuccessMsg('A new 6-digit OTP has been generated. Check your backend terminal.');
-      // Reset cooldown and timer
       setCooldown(30);
       setTimeLeft(300);
-      // Clear entered digits
       setDigits(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch (err) {
@@ -144,70 +139,72 @@ export default function VerifyOtpPage() {
   const isExpired = timeLeft === 0;
 
   return (
-    <div className="min-h-[calc(100vh-140px)] flex items-center justify-center px-4 py-12 bg-[#F8FAFC]">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
+    <div className="auth-page-container">
+      <div className="auth-card">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex p-3 bg-[#0A192F] rounded-xl text-blue-400 shadow-xs">
+        <div className="auth-header">
+          <div className="auth-brand-icon-box">
             <ShieldCheck className="h-7 w-7" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Verify Your Email</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="auth-title">Verify Your Email</h2>
+          <p className="auth-subtitle">
             Enter the 6-digit verification code sent to your email.
           </p>
         </div>
 
         {/* Email verification target */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs flex items-center justify-between">
-          <div className="flex items-center space-x-2 min-w-0">
-            <Mail className="h-4 w-4 text-slate-400 flex-shrink-0" />
+        <div style={{ backgroundColor: '#f8fafc', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '0.75rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+            <Mail className="h-4 w-4 text-slate-400 shrink-0" />
             {isEditingEmail ? (
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="citizen@example.com"
-                className="bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                style={{ backgroundColor: '#ffffff', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: 'var(--text-primary)', outline: 'none' }}
               />
             ) : (
-              <span className="font-semibold text-slate-800 truncate">{email || 'No email provided'}</span>
+              <span style={{ fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {email || 'No email provided'}
+              </span>
             )}
           </div>
           <button
             type="button"
             onClick={() => setIsEditingEmail(!isEditingEmail)}
-            className="text-[11px] text-blue-600 hover:underline font-semibold ml-2 flex-shrink-0"
+            style={{ fontSize: '0.6875rem', color: 'var(--primary-navy)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700 }}
           >
             {isEditingEmail ? 'Done' : 'Change'}
           </button>
         </div>
 
         {/* Terminal Hint Banner */}
-        <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 flex items-start space-x-2.5">
-          <Terminal className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="leading-relaxed text-[11px]">
+        <div style={{ backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius-md)', padding: '0.75rem', fontSize: '0.6875rem', color: '#1e3a8a', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+          <Terminal className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+          <div style={{ lineHeight: 1.4 }}>
             <strong>Development Notice:</strong> View the 6-digit OTP printed in your Django backend terminal.
           </div>
         </div>
 
         {/* Notifications */}
         {error && (
-          <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-rose-800 text-xs flex items-start space-x-2">
-            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-rose-600" />
+          <div className="auth-banner-error">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-emerald-800 text-xs flex items-start space-x-2">
-            <CheckCircle2 className="h-4 w-4 flex-shrink-0 mt-0.5 text-emerald-600" />
+          <div className="auth-banner-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" />
             <span>{successMsg}</span>
           </div>
         )}
 
         {/* 6-Digit Boxes Form */}
-        <form onSubmit={handleVerify} className="space-y-5">
-          <div className="flex justify-between gap-2 on-paste" onPaste={handlePaste}>
+        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="otp-inputs-grid" onPaste={handlePaste}>
             {digits.map((digit, idx) => (
               <input
                 key={idx}
@@ -219,22 +216,22 @@ export default function VerifyOtpPage() {
                 onChange={(e) => handleDigitChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 disabled={loading || isExpired}
-                className="w-12 h-14 text-center text-xl font-bold font-mono rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-2xs transition disabled:bg-slate-100 disabled:text-slate-400"
+                className="otp-box-input"
               />
             ))}
           </div>
 
           {/* Expiry Countdown */}
-          <div className="flex items-center justify-between text-xs pt-1">
-            <span className="text-slate-500">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+            <span style={{ color: 'var(--text-muted)' }}>
               Code expires in:{' '}
-              <span className={`font-mono font-bold ${isExpired ? 'text-rose-600' : 'text-slate-800'}`}>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, color: isExpired ? '#dc2626' : 'var(--text-primary)' }}>
                 {formatTime(timeLeft)}
               </span>
             </span>
 
             {isExpired && (
-              <span className="text-[11px] text-rose-600 font-semibold">
+              <span style={{ fontSize: '0.6875rem', color: '#dc2626', fontWeight: 700 }}>
                 OTP Expired
               </span>
             )}
@@ -244,7 +241,8 @@ export default function VerifyOtpPage() {
           <button
             type="submit"
             disabled={loading || isExpired || digits.join('').length !== 6}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-xs transition flex items-center justify-center space-x-1.5 disabled:opacity-50"
+            className="auth-submit-btn"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem' }}
           >
             <span>{loading ? 'Verifying OTP...' : 'Verify OTP'}</span>
             <ArrowRight className="h-4 w-4" />
@@ -252,13 +250,13 @@ export default function VerifyOtpPage() {
         </form>
 
         {/* Resend OTP Button with Cooldown */}
-        <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100 flex items-center justify-between">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '0.875rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           <span>Didn&rsquo;t receive the code?</span>
           <button
             type="button"
             onClick={handleResend}
             disabled={cooldown > 0 || resending}
-            className="text-blue-600 font-semibold hover:underline disabled:text-slate-400 disabled:no-underline flex items-center space-x-1 transition"
+            style={{ color: cooldown > 0 ? '#94a3b8' : 'var(--primary-navy)', background: 'none', border: 'none', cursor: cooldown > 0 ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
           >
             <RotateCcw className={`h-3.5 w-3.5 ${resending ? 'animate-spin' : ''}`} />
             <span>
@@ -271,13 +269,12 @@ export default function VerifyOtpPage() {
           </button>
         </div>
 
-        <div className="text-center text-xs text-slate-500">
-          <Link to="/login" className="text-slate-600 hover:underline">
+        <p className="auth-footer-text">
+          <Link to="/login" className="auth-footer-link">
             Back to Sign In
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );
 }
-

@@ -4,11 +4,7 @@ import { casesApi } from '../api/cases';
 import AppLayout from '../components/AppLayout';
 import {
   Calendar,
-  ChevronRight,
   AlertCircle,
-  FileText,
-  CheckCircle2,
-  Clock,
   ArrowLeft
 } from 'lucide-react';
 import './TimelinePage.css';
@@ -38,9 +34,9 @@ export default function TimelinePage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="p-16 text-center space-y-3">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-slate-500 text-xs">Building procedural case timeline...</p>
+        <div className="timeline-page-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Building procedural case timeline...</p>
         </div>
       </AppLayout>
     );
@@ -49,11 +45,22 @@ export default function TimelinePage() {
   if (error || !timelineData) {
     return (
       <AppLayout>
-        <div className="p-12 max-w-lg mx-auto text-center space-y-4">
-          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
-          <h2 className="text-lg font-bold text-slate-800">Timeline Unavailable</h2>
-          <p className="text-xs text-slate-500">{error || 'No chronological events recorded for this case.'}</p>
-          <Link to={`/cases/${id}`} className="text-xs text-blue-600 hover:underline font-semibold">
+        <div className="timeline-page-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto mb-3" />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Timeline Unavailable</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>{error || 'No chronological events recorded for this case.'}</p>
+          <Link
+            to={`/cases/${id}`}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: 'var(--primary-navy)',
+              color: '#ffffff',
+              borderRadius: 'var(--radius-md)',
+              textDecoration: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+            }}
+          >
             Return to Case Detail
           </Link>
         </div>
@@ -65,62 +72,58 @@ export default function TimelinePage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="timeline-page-container">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center space-x-1.5 text-xs text-slate-500">
-          <Link to="/search" className="hover:text-blue-600 transition">Cases</Link>
-          <ChevronRight className="h-3 w-3 text-slate-400" />
-          <Link to={`/cases/${id}`} className="hover:text-blue-600 transition truncate max-w-[200px]">
+        <nav className="timeline-breadcrumb">
+          <Link to="/search">Cases</Link>
+          <span className="separator">&gt;</span>
+          <Link to={`/cases/${id}`} style={{ maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {case_title || case_number}
           </Link>
-          <ChevronRight className="h-3 w-3 text-slate-400" />
-          <span className="font-semibold text-slate-800">Timeline</span>
+          <span className="separator">&gt;</span>
+          <span className="current">Timeline</span>
         </nav>
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="timeline-header-card">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Procedural Case Timeline</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="timeline-title">Procedural Case Timeline</h1>
+            <p className="timeline-subtitle">
               Chronological milestones from filing to final judgment for {case_number}.
             </p>
           </div>
           <Link
             to={`/cases/${id}`}
-            className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center space-x-1 transition"
+            className="timeline-btn-back"
           >
-            <ArrowLeft className="h-3 w-3" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             <span>Case Detail</span>
           </Link>
         </div>
 
         {/* Timeline Events Container */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs">
+        <div className="timeline-card-wrapper">
           {timeline && timeline.length > 0 ? (
-            <div className="relative border-l-2 border-blue-500 ml-4 space-y-8 pl-6">
-              {timeline.map((item, idx) => (
-                <div key={idx} className="relative group">
-                  {/* Dot */}
-                  <span className="absolute -left-[31px] top-1 h-3.5 w-3.5 rounded-full bg-blue-600 ring-4 ring-white"></span>
-
-                  <div className="space-y-1">
-                    <span className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[11px] font-mono font-semibold">
-                      {item.event_date || item.date}
-                    </span>
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      {item.event_title || item.title || item.event_type}
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed max-w-xl">
-                      {item.description}
-                    </p>
+            <div className="timeline-flow-container">
+              <div className="timeline-vertical-line" />
+              {timeline.map((ev, i) => (
+                <div key={i} className="timeline-event-card">
+                  <div className="timeline-node-dot" />
+                  <div className="timeline-event-date">
+                    <Calendar className="h-3 w-3" />
+                    <span>{ev.event_date}</span>
                   </div>
+                  <h3 className="timeline-event-title">{ev.event_title || ev.event_type}</h3>
+                  {ev.description && (
+                    <p className="timeline-event-desc">{ev.description}</p>
+                  )}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-500 text-xs">
-              No recorded timeline events for this case record.
-            </div>
+            <p style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+              No procedural milestones recorded for this judgment.
+            </p>
           )}
         </div>
       </div>

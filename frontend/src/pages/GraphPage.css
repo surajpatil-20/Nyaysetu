@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GraphPage Styles (Judicial Knowledge Graph)
+   GraphPage Styles (Judicial Knowledge Graph - Screen 4)
    ========================================================================== */
 
 .graph-page-container {
@@ -12,6 +12,36 @@
   gap: 1.25rem;
 }
 
+/* Breadcrumb */
+.graph-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.graph-breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.graph-breadcrumb a:hover {
+  color: var(--blue-600);
+}
+
+.graph-breadcrumb .separator {
+  color: var(--border-medium);
+  font-size: 0.75rem;
+}
+
+.graph-breadcrumb span.current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 /* Header */
 .graph-header {
   display: flex;
@@ -21,16 +51,16 @@
 
 .graph-title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  color: var(--navy-900);
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
 .graph-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
-  margin-top: 0.125rem;
+  margin-top: 0.25rem;
   margin-bottom: 0;
 }
 
@@ -48,7 +78,7 @@
   position: relative;
   width: 100%;
   height: 540px;
-  background-color: rgba(248, 250, 252, 0.5);
+  background-color: #fbfcfe;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -65,28 +95,30 @@
   transform-origin: center center;
 }
 
-/* Floating Controls */
+/* Floating Controls (Zoom Buttons) */
 .graph-floating-controls {
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  bottom: 1.25rem;
+  left: 1.25rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(4px);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 0.25rem;
-  box-shadow: var(--shadow-xs);
+  border-radius: var(--radius-md);
+  padding: 0.375rem;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
 }
 
 .graph-control-btn {
-  padding: 0.375rem;
-  border-radius: var(--radius-md);
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -97,43 +129,46 @@
 .graph-control-btn:hover {
   background-color: #f1f5f9;
   color: var(--text-primary);
+  border-color: var(--border-subtle);
 }
 
 /* Legend Card */
 .graph-legend-card {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 1.25rem;
+  right: 1.25rem;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(4px);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
+  border-radius: var(--radius-md);
+  padding: 1.125rem;
   box-shadow: var(--shadow-sm);
-  width: 11rem;
+  width: 12rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
   font-size: 0.75rem;
+  z-index: 10;
 }
 
 .graph-legend-heading {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--navy-900);
   margin: 0 0 0.5rem 0;
+  font-size: 0.8125rem;
 }
 
 .graph-legend-list {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.4rem;
 }
 
 .graph-legend-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
@@ -144,37 +179,99 @@
   flex-shrink: 0;
 }
 
-.legend-dot-case { background-color: #0A192F; }
-.legend-dot-court { background-color: #3B82F6; }
+.legend-dot-case { background-color: #11486B; }
+.legend-dot-court { background-color: #38BDF8; }
 .legend-dot-judge { background-color: #9333EA; }
 .legend-dot-party { background-color: #10B981; }
 .legend-dot-act { background-color: #6366F1; }
-.legend-dot-section { background-color: #F59E0B; }
-.legend-dot-related { background-color: #EF4444; }
+.legend-dot-section { background-color: #FFA425; }
+.legend-dot-related { background-color: #F43F5E; }
 
 .graph-legend-rels-section {
   border-top: 1px solid #f1f5f9;
-  padding-top: 0.5rem;
+  padding-top: 0.625rem;
 }
 
 .graph-legend-rels-heading {
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  font-size: 0.75rem;
   margin: 0 0 0.375rem 0;
 }
 
 .graph-legend-rels-list {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.625rem;
+  gap: 0.3rem;
+  font-size: 0.6875rem;
   color: var(--text-muted);
-  font-family: var(--font-mono);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .graph-legend-rel-row {
   display: flex;
   align-items: center;
   gap: 0.375rem;
+}
+
+/* Triples Section */
+.graph-triples-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.graph-triples-heading {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  margin: 0;
+}
+
+.graph-triples-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .graph-triples-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.graph-triple-item {
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.graph-triple-source {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.graph-triple-type {
+  padding: 0.125rem 0.5rem;
+  background-color: #eff6ff;
+  color: var(--blue-700);
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.graph-triple-target {
+  color: var(--text-secondary);
 }

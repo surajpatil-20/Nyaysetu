@@ -1,32 +1,41 @@
 /* ==========================================================================
    NYAYASETU — Global Design System & CSS Variables
+   Color Palette: Deep Navy Blue (#11486B) & Gold/Amber Accent (#FFA425)
+   Direction: Judicial Knowledge → Cases → Evidence → Documents → Relationships → AI
    ========================================================================== */
 
 :root {
-  /* Brand Navy Palette */
-  --navy-950: #07111F;
-  --navy-900: #0A192F;
-  --navy-850: #0E213D;
-  --navy-800: #132B4F;
-  --navy-border: #1E293B;
+  /* Primary Deep Navy System */
+  --primary-navy: #11486B;
+  --primary-navy-dark: #0A2540;
+  --primary-navy-deep: #071B2D;
+  --primary-navy-surface: #0E3550;
+  --primary-navy-border: #1B4568;
 
-  /* Primary Blue Accents */
-  --blue-600: #2563EB;
-  --blue-700: #1D4ED8;
-  --blue-800: #1E40AF;
-  --blue-500: #3B82F6;
-  --blue-400: #60A5FA;
-  --blue-100: #DBEAFE;
-  --blue-50: #EFF6FF;
+  /* Accent Gold / Amber System */
+  --accent-gold: #FFA425;
+  --accent-gold-hover: #E59018;
+  --accent-gold-dark: #C97500;
+  --accent-gold-light: #FFF4E3;
+  --accent-gold-border: #FCD8A5;
+  --accent-gold-text: #9E5B00;
+
+  /* Secondary Blue Accents (for judicial links & citations) */
+  --blue-600: #1D5E8A;
+  --blue-700: #11486B;
+  --blue-500: #2575AB;
+  --blue-100: #E2EEF7;
+  --blue-50: #F0F6FB;
 
   /* Surface & Background Colors */
   --bg-canvas: #F8FAFC;
   --bg-surface: #FFFFFF;
   --bg-subtle: #F1F5F9;
-  --bg-muted: #E2E8F0;
+  --bg-sidebar: #0A2540;
+  --bg-sidebar-active: #11486B;
 
   /* Typography / Text Colors */
-  --text-primary: #0F172A;
+  --text-primary: #0B1B2B;
   --text-secondary: #334155;
   --text-muted: #64748B;
   --text-light: #94A3B8;
@@ -37,7 +46,7 @@
   --border-subtle: #E2E8F0;
   --border-default: #CBD5E1;
   --border-strong: #94A3B8;
-  --border-navy: #1E293B;
+  --border-sidebar: #16375A;
 
   /* Functional Status Colors */
   --success-bg: #ECFDF5;
@@ -55,7 +64,7 @@
   --font-serif: 'Merriweather', Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Border Radii */
+  /* Border Radii (Clean, small/medium rounded corners) */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -63,12 +72,11 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
-  /* Elevation Shadows */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  /* Minimal Elevation Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(11, 27, 43, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(11, 27, 43, 0.07), 0 1px 2px -1px rgba(11, 27, 43, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(11, 27, 43, 0.08), 0 2px 4px -2px rgba(11, 27, 43, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(11, 27, 43, 0.09), 0 4px 6px -4px rgba(11, 27, 43, 0.04);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

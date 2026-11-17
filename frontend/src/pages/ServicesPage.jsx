@@ -6,7 +6,6 @@ import {
   ExternalLink,
   Scale,
   Search,
-  BookOpen,
   Shield,
   FileText
 } from 'lucide-react';
@@ -14,9 +13,7 @@ import './ServicesPage.css';
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All');
-  const [error, setError] = useState(null);
 
   const filterTabs = [
     { label: 'All', value: 'All' },
@@ -80,8 +77,6 @@ export default function ServicesPage() {
 
   useEffect(() => {
     async function fetchServices() {
-      setLoading(true);
-      setError(null);
       try {
         const data = await servicesApi.getServices();
         if (data && (data.results?.length > 0 || data.length > 0)) {
@@ -89,11 +84,8 @@ export default function ServicesPage() {
         } else {
           setServices(defaultServices);
         }
-      } catch (err) {
-        // Fallback to default verified services
+      } catch {
         setServices(defaultServices);
-      } finally {
-        setLoading(false);
       }
     }
     fetchServices();
@@ -110,30 +102,25 @@ export default function ServicesPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="services-page-container">
         {/* Header (Screen 7) */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Judicial & Government Services
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+        <div className="services-header">
+          <h1 className="services-title">Judicial &amp; Government Services</h1>
+          <p className="services-subtitle">
             Access official judicial and legal services from trusted government sources.
           </p>
         </div>
 
         {/* Filter Pills (Screen 7) */}
-        <div className="flex space-x-2 overflow-x-auto pb-1 text-xs">
+        <div className="services-tabs-row">
           {filterTabs.map((tab) => {
             const isActive = activeTab === tab.value;
             return (
               <button
                 key={tab.value}
+                type="button"
                 onClick={() => setActiveTab(tab.value)}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${
-                  isActive
-                    ? 'bg-[#0A192F] text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
+                className={`services-tab-btn ${isActive ? 'active' : ''}`}
               >
                 {tab.label}
               </button>
@@ -141,8 +128,8 @@ export default function ServicesPage() {
           })}
         </div>
 
-        {/* Services Grid (Screen 7) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Services Grid (Screen 7 - 2x2 cards) */}
+        <div className="services-grid">
           {filteredServices.map((svc, idx) => {
             const Icon = svc.icon || Building2;
             const title = svc.name || svc.title;
@@ -150,28 +137,23 @@ export default function ServicesPage() {
             const url = svc.url || svc.portal_url;
 
             return (
-              <div
-                key={svc.id || idx}
-                className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-3">
-                  <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl w-fit">
+              <div key={svc.id || idx} className="service-card">
+                <div className="service-card-top">
+                  <div className="service-icon-box">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-base">{title}</h3>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                      {desc}
-                    </p>
+                    <h3 className="service-title">{title}</h3>
+                    <p className="service-desc">{desc}</p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-100">
+                <div className="service-card-footer">
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition"
+                    className="service-link"
                   >
                     <span>Visit Official Site</span>
                     <ExternalLink className="h-3.5 w-3.5" />

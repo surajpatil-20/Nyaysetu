@@ -2,22 +2,16 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../api/admin';
 import AppLayout from '../components/AppLayout';
 import {
-  Shield,
   RefreshCw,
   Check,
   CheckCircle2,
-  AlertCircle,
-  Database,
-  FileText,
-  Users,
-  Scale,
-  Cpu
+  AlertCircle
 } from 'lucide-react';
 import './AdminPage.css';
 
 export default function AdminPage() {
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -62,25 +56,25 @@ export default function AdminPage() {
 
   return (
     <AppLayout>
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="admin-page-container">
         {/* Header & Sync Knowledge Graph Button (Screen 8) */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="admin-header">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Dashboard</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="admin-title">Admin Dashboard</h1>
+            <p className="admin-subtitle">
               Platform overview and data management.
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <span className="text-[11px] text-slate-500 hidden sm:inline">
+          <div className="admin-header-actions">
+            <span className="admin-sync-timestamp">
               Last Sync: 24 Jan 2025, 10:42 AM
             </span>
             <button
               type="button"
               onClick={handleSyncGraph}
               disabled={syncing}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition disabled:opacity-50"
+              className="admin-btn-sync"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`} />
               <span>Sync Knowledge Graph</span>
@@ -89,112 +83,108 @@ export default function AdminPage() {
         </div>
 
         {syncMessage && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-800 flex items-center space-x-2">
+          <div style={{ backgroundColor: '#e6f8ee', border: '1px solid #a7f3d0', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', fontSize: '0.8125rem', color: '#065f46', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
             <span>{syncMessage}</span>
           </div>
         )}
 
         {error && (
-          <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-rose-800 flex items-center space-x-2">
+          <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', fontSize: '0.8125rem', color: '#991b1b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <AlertCircle className="h-4 w-4 text-rose-600 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* 5 KPI Metric Cards (Screen 8) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="admin-metrics-grid">
           {/* Total Cases */}
-          <div className="bg-[#EFF6FF] border border-blue-100 rounded-xl p-5 text-center space-y-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#1D4ED8]">{totalCases}</div>
-            <div className="text-xs font-semibold text-slate-700">Total Cases</div>
+          <div className="admin-metric-card card-blue">
+            <div className="admin-metric-num">{totalCases}</div>
+            <div className="admin-metric-label">Total Cases</div>
           </div>
 
           {/* Documents */}
-          <div className="bg-[#FAF5FF] border border-purple-100 rounded-xl p-5 text-center space-y-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#7E22CE]">{totalDocuments}</div>
-            <div className="text-xs font-semibold text-slate-700">Documents</div>
+          <div className="admin-metric-card card-purple">
+            <div className="admin-metric-num">{totalDocuments}</div>
+            <div className="admin-metric-label">Documents</div>
           </div>
 
           {/* Document Chunks */}
-          <div className="bg-[#F0FDF4] border border-emerald-100 rounded-xl p-5 text-center space-y-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#15803D]">{totalChunks}</div>
-            <div className="text-xs font-semibold text-slate-700">Document Chunks</div>
+          <div className="admin-metric-card card-green">
+            <div className="admin-metric-num">{totalChunks}</div>
+            <div className="admin-metric-label">Document Chunks</div>
           </div>
 
           {/* Embeddings */}
-          <div className="bg-[#FFFBEB] border border-amber-100 rounded-xl p-5 text-center space-y-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#B45309]">{totalEmbeddings}</div>
-            <div className="text-xs font-semibold text-slate-700">Embeddings</div>
+          <div className="admin-metric-card card-amber">
+            <div className="admin-metric-num">{totalEmbeddings}</div>
+            <div className="admin-metric-label">Embeddings</div>
           </div>
 
           {/* Users */}
-          <div className="bg-[#FFF1F2] border border-rose-100 rounded-xl p-5 text-center space-y-1 col-span-2 sm:col-span-1">
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#BE123C]">{totalUsers}</div>
-            <div className="text-xs font-semibold text-slate-700">Users</div>
+          <div className="admin-metric-card card-rose">
+            <div className="admin-metric-num">{totalUsers}</div>
+            <div className="admin-metric-label">Users</div>
           </div>
         </div>
 
         {/* Bottom Two Cards: Dataset Information & System Health (Screen 8) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="admin-info-grid">
           {/* Card 1: Dataset Information */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-3">
-              Dataset Information
-            </h3>
-            <div className="divide-y divide-slate-100 text-xs">
-              <div className="py-2.5 flex justify-between items-center">
-                <span className="text-slate-500 font-medium">Source</span>
-                <span className="font-semibold text-slate-800 text-right">Indian Supreme Court Judgments Open Dataset (AWS)</span>
+          <div className="admin-info-card">
+            <h3 className="admin-info-heading">Dataset Information</h3>
+            <div className="admin-data-rows">
+              <div className="admin-data-row">
+                <span className="admin-data-label">Source</span>
+                <span className="admin-data-val">Indian Supreme Court Judgments Open Dataset (AWS)</span>
               </div>
-              <div className="py-2.5 flex justify-between items-center">
-                <span className="text-slate-500 font-medium">License</span>
-                <span className="font-semibold text-slate-800">CC BY 4.0</span>
+              <div className="admin-data-row">
+                <span className="admin-data-label">License</span>
+                <span className="admin-data-val">CC BY 4.0</span>
               </div>
-              <div className="py-2.5 flex justify-between items-center">
-                <span className="text-slate-500 font-medium">Records Imported</span>
-                <span className="font-semibold text-slate-800">100 (Phase 1)</span>
+              <div className="admin-data-row">
+                <span className="admin-data-label">Records Imported</span>
+                <span className="admin-data-val">100 (Phase 1)</span>
               </div>
-              <div className="py-2.5 flex justify-between items-center">
-                <span className="text-slate-500 font-medium">Last Imported</span>
-                <span className="font-semibold text-slate-800">24 Jan 2025</span>
+              <div className="admin-data-row">
+                <span className="admin-data-label">Last Imported</span>
+                <span className="admin-data-val">24 Jan 2025</span>
               </div>
             </div>
           </div>
 
           {/* Card 2: System Health */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-3">
-              System Health
-            </h3>
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center space-x-2.5 text-slate-700">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />
-                <span className="font-medium">
+          <div className="admin-info-card">
+            <h3 className="admin-info-heading">System Health</h3>
+            <div className="admin-health-list">
+              <div className="admin-health-row">
+                <Check className="h-4 w-4 admin-health-check" />
+                <span>
                   <strong>PostgreSQL (pgvector)</strong> — Connected
                 </span>
               </div>
-              <div className="flex items-center space-x-2.5 text-slate-700">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />
-                <span className="font-medium">
+              <div className="admin-health-row">
+                <Check className="h-4 w-4 admin-health-check" />
+                <span>
                   <strong>Neo4j</strong> — Connected
                 </span>
               </div>
-              <div className="flex items-center space-x-2.5 text-slate-700">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />
-                <span className="font-medium">
+              <div className="admin-health-row">
+                <Check className="h-4 w-4 admin-health-check" />
+                <span>
                   <strong>Embedding Model</strong> — BAAI/bge-base-en-v1.5 (768-dim)
                 </span>
               </div>
-              <div className="flex items-center space-x-2.5 text-slate-700">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />
-                <span className="font-medium">
+              <div className="admin-health-row">
+                <Check className="h-4 w-4 admin-health-check" />
+                <span>
                   <strong>Search Service</strong> — Operational
                 </span>
               </div>
-              <div className="flex items-center space-x-2.5 text-slate-700">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />
-                <span className="font-medium">
+              <div className="admin-health-row">
+                <Check className="h-4 w-4 admin-health-check" />
+                <span>
                   <strong>RAG Assistant</strong> — Operational
                 </span>
               </div>
