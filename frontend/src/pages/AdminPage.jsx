@@ -13,6 +13,7 @@ import {
   Scale,
   Cpu
 } from 'lucide-react';
+import './AdminPage.css';
 
 export default function AdminPage() {
   const [stats, setStats] = useState(null);

@@ -16,6 +16,7 @@ import {
   Bookmark,
   Share2
 } from 'lucide-react';
+import './GraphPage.css';
 
 export default function GraphPage() {
   const { id } = useParams();

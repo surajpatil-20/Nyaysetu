@@ -2,6 +2,7 @@ import { useAuth } from '../context/AuthContext';
 import { User, Mail, Shield, LogOut, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import './ProfilePage.css';
 
 export default function ProfilePage() {
   const { user, isAdmin, logout } = useAuth();

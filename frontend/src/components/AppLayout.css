@@ -1,0 +1,133 @@
+/* ==========================================================================
+   AppLayout Component Styles
+   ========================================================================== */
+
+.app-layout-root {
+  display: flex;
+  min-height: calc(100vh - 4rem);
+  background-color: var(--bg-canvas);
+}
+
+/* Dark Navy Sidebar */
+.app-sidebar {
+  width: 14rem;
+  background-color: var(--navy-900);
+  color: #cbd5e1;
+  flex-shrink: 0;
+  display: none;
+  flex-direction: column;
+  border-right: 1px solid var(--navy-border);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .app-sidebar {
+    display: flex;
+  }
+}
+
+.app-sidebar-nav {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.app-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: #94a3b8;
+  transition: all var(--transition-fast);
+}
+
+.app-sidebar-link:hover {
+  color: #ffffff;
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+.app-sidebar-link.active {
+  background-color: var(--blue-600);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.app-sidebar-link-icon {
+  height: 1rem;
+  width: 1rem;
+  flex-shrink: 0;
+}
+
+.app-sidebar-link.active .app-sidebar-link-icon {
+  color: #ffffff;
+}
+
+/* Sidebar Profile Footer */
+.app-sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+.app-sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+}
+
+.app-sidebar-user-card:hover {
+  background-color: rgba(30, 41, 59, 0.6);
+}
+
+.app-sidebar-avatar {
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: var(--radius-full);
+  background-color: var(--blue-600);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-sidebar-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.app-sidebar-username {
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.app-sidebar-user-role {
+  font-size: 0.625rem;
+  color: #64748b;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+/* Main Content Area */
+.app-main-pane {
+  flex: 1;
+  overflow-x: hidden;
+  min-width: 0;
+}

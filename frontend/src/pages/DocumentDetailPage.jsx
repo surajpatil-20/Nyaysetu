@@ -14,6 +14,7 @@ import {
   Download,
   BookOpen
 } from 'lucide-react';
+import './DocumentDetailPage.css';
 
 export default function DocumentDetailPage() {
   const { id } = useParams();

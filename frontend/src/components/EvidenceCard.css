@@ -1,0 +1,160 @@
+/* ==========================================================================
+   EvidenceCard Component Styles
+   ========================================================================== */
+
+.evidence-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.evidence-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #93c5fd;
+}
+
+/* Header & Title */
+.evidence-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.evidence-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .evidence-card-title {
+    font-size: 1.125rem;
+  }
+}
+
+.evidence-card-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.evidence-card-title a:hover {
+  color: var(--blue-600);
+}
+
+/* Score Pill */
+.evidence-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.625rem;
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Metadata Row */
+.evidence-meta-row {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.evidence-case-num {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Snippet */
+.evidence-snippet-box {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-family: var(--font-serif);
+  color: var(--text-secondary);
+  background-color: rgba(248, 250, 252, 0.8);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--blue-600);
+  margin: 0;
+}
+
+/* Footer & Actions */
+.evidence-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.evidence-page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background-color: #f1f5f9;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+}
+
+.evidence-doc-title {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.evidence-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.evidence-link-pdf {
+  color: var(--text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.evidence-link-pdf:hover {
+  color: var(--blue-600);
+}
+
+.evidence-link-case {
+  color: var(--blue-600);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color var(--transition-fast);
+}
+
+.evidence-link-case:hover {
+  color: var(--blue-700);
+}

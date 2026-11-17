@@ -14,6 +14,7 @@ import {
   AlertCircle,
   X
 } from 'lucide-react';
+import './DocumentsPage.css';
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);

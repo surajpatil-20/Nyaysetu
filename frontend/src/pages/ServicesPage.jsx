@@ -10,6 +10,7 @@ import {
   Shield,
   FileText
 } from 'lucide-react';
+import './ServicesPage.css';
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);

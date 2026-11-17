@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Mail, AlertCircle, CheckCircle2, RotateCcw, ArrowRight, Terminal } from 'lucide-react';
+import './AuthPages.css';
 
 export default function VerifyOtpPage() {
   const location = useLocation();

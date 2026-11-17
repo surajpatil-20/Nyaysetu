@@ -14,6 +14,7 @@ import {
   Sparkles,
   Network
 } from 'lucide-react';
+import './DashboardPage.css';
 
 export default function DashboardPage() {
   const { user, isAdmin } = useAuth();

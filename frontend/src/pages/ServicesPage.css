@@ -1,0 +1,154 @@
+/* ==========================================================================
+   ServicesPage Styles (Judicial & Government Services)
+   ========================================================================== */
+
+.services-page-container {
+  padding: 1.5rem;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.services-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.services-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.services-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Category Filter Tabs */
+.services-tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.services-tabs-row::-webkit-scrollbar {
+  display: none;
+}
+
+.services-tab-btn {
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  background-color: #ffffff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.services-tab-btn:hover {
+  border-color: #93c5fd;
+  color: var(--blue-600);
+}
+
+.services-tab-btn.active {
+  background-color: var(--blue-600);
+  color: #ffffff;
+  border-color: var(--blue-600);
+}
+
+/* Services Grid (Screen 7) */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.service-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.service-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #93c5fd;
+}
+
+.service-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.service-icon-box {
+  padding: 0.625rem;
+  background-color: var(--blue-50);
+  color: var(--blue-600);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.service-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.service-card-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.service-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.service-card-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--blue-600);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color var(--transition-fast);
+}
+
+.service-card-link:hover {
+  color: var(--blue-700);
+}

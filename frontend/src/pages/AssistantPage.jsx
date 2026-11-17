@@ -14,6 +14,7 @@ import {
   BookOpen,
   ArrowRight
 } from 'lucide-react';
+import './AssistantPage.css';
 
 const QUICK_PROMPTS = [
   'What was held regarding child witness testimony in Pradeep v State of Haryana?',
@@ -28,11 +29,9 @@ const QUICK_PROMPTS = [
 function FormattedJudicialText({ content, onCitationClick }) {
   if (!content) return null;
 
-  // Split into lines
   const lines = content.split('\n');
 
   const renderInline = (text) => {
-    // Regex for [Evidence N]
     const parts = text.split(/(\[Evidence \d+\]|\*\*[^*]+\*\*)/g);
     return parts.map((part, i) => {
       const evMatch = part.match(/\[Evidence (\d+)\]/);
@@ -43,7 +42,7 @@ function FormattedJudicialText({ content, onCitationClick }) {
             key={i}
             type="button"
             onClick={() => onCitationClick?.(evIdx)}
-            className="inline-flex items-center px-1.5 py-0.5 mx-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-900 border border-blue-200 transition shadow-2xs"
+            className="judicial-citation-pill"
             title={`Jump to Evidence ${evIdx}`}
           >
             {part}
@@ -58,7 +57,7 @@ function FormattedJudicialText({ content, onCitationClick }) {
   };
 
   return (
-    <div className="space-y-2 text-xs sm:text-sm text-slate-800 leading-relaxed">
+    <div className="judicial-text-wrapper">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
         if (!trimmed) return <div key={idx} className="h-1" />;
@@ -66,8 +65,8 @@ function FormattedJudicialText({ content, onCitationClick }) {
         // Heading 3
         if (trimmed.startsWith('### ')) {
           return (
-            <h3 key={idx} className="text-xs sm:text-sm font-bold text-slate-900 pt-2 pb-0.5 border-b border-slate-100 flex items-center space-x-1.5">
-              <span>{trimmed.replace('### ', '')}</span>
+            <h3 key={idx} className="judicial-heading">
+              {trimmed.replace('### ', '')}
             </h3>
           );
         }
@@ -75,10 +74,7 @@ function FormattedJudicialText({ content, onCitationClick }) {
         // Blockquote
         if (trimmed.startsWith('> ')) {
           return (
-            <blockquote
-              key={idx}
-              className="border-l-3 border-blue-600 bg-blue-50/60 pl-3.5 py-2 my-2 text-xs italic text-slate-700 rounded-r-md"
-            >
+            <blockquote key={idx} className="judicial-blockquote">
               {renderInline(trimmed.replace(/^>\s*/, ''))}
             </blockquote>
           );
@@ -87,15 +83,15 @@ function FormattedJudicialText({ content, onCitationClick }) {
         // Bullet list
         if (trimmed.startsWith('- ')) {
           return (
-            <div key={idx} className="flex items-start space-x-2 pl-1 py-0.5">
-              <span className="text-blue-600 font-bold mt-1 text-xs">•</span>
+            <div key={idx} className="judicial-bullet-row">
+              <span className="judicial-bullet-dot">•</span>
               <div className="flex-1">{renderInline(trimmed.replace(/^- \s*/, ''))}</div>
             </div>
           );
         }
 
         // Normal paragraph
-        return <p key={idx}>{renderInline(trimmed)}</p>;
+        return <p key={idx} className="m-0">{renderInline(trimmed)}</p>;
       })}
     </div>
   );
@@ -218,27 +214,27 @@ export default function AssistantPage() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-4 flex flex-col h-[calc(100vh-64px)]">
+      <div className="assistant-container">
         {/* Header (Panel 5 in Figma design) */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200/80 pb-3">
+        <div className="assistant-header">
           <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <div className="assistant-title-group">
+              <h1 className="assistant-title">
                 Judicial AI Assistant
               </h1>
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+              <span className="assistant-badge-pill">
                 Evidence-Grounded RAG
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="assistant-subtitle">
               Ask questions about judicial cases, legal principles, statutory provisions, or specific Supreme Court judgments.
             </p>
           </div>
         </div>
 
         {/* Quick starter chips */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-          <span className="text-[11px] font-semibold text-slate-500 flex items-center space-x-1 shrink-0">
+        <div className="assistant-chips-container">
+          <span className="assistant-chips-label">
             <Sparkles className="h-3 w-3 text-amber-500" />
             <span>Suggested:</span>
           </span>
@@ -248,7 +244,7 @@ export default function AssistantPage() {
               type="button"
               disabled={loading}
               onClick={() => handleSend(prompt)}
-              className="shrink-0 px-2.5 py-1 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-full text-slate-700 hover:text-blue-700 text-[11px] font-medium transition shadow-2xs disabled:opacity-50"
+              className="assistant-chip-btn"
             >
               {prompt}
             </button>
@@ -256,12 +252,12 @@ export default function AssistantPage() {
         </div>
 
         {/* Conversation Stream */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-xl p-4 sm:p-5 overflow-y-auto space-y-6 shadow-xs">
+        <div className="assistant-chat-stream">
           {messages.map((msg, index) => {
             if (msg.role === 'user') {
               return (
-                <div key={index} className="flex justify-end">
-                  <div className="bg-blue-600 text-white rounded-2xl rounded-tr-none px-4 py-2.5 max-w-xl text-xs sm:text-sm font-medium leading-relaxed shadow-xs">
+                <div key={index} className="assistant-user-msg-row">
+                  <div className="assistant-user-msg-bubble">
                     {msg.content}
                   </div>
                 </div>
@@ -270,18 +266,18 @@ export default function AssistantPage() {
 
             // Assistant Message
             return (
-              <div key={index} className="flex items-start space-x-3 max-w-3xl">
-                <div className="h-8 w-8 rounded-full bg-[#0A192F] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <div key={index} className="assistant-ai-msg-row">
+                <div className="assistant-ai-avatar">
                   <Scale className="h-4 w-4 text-blue-400" />
                 </div>
 
-                <div className="space-y-3 flex-1 min-w-0">
-                  <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 sm:p-5 shadow-2xs">
+                <div className="assistant-ai-content-box">
+                  <div className="assistant-ai-msg-card">
                     <FormattedJudicialText content={msg.content} />
 
                     {/* Insufficient Evidence Safeguard */}
                     {msg.hasSufficientEvidence === false && (
-                      <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start space-x-2">
+                      <div className="assistant-insufficient-warning">
                         <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                         <span>{msg.insufficientEvidenceReason || 'Insufficient judicial evidence found for this inquiry in the NYAYASETU repository.'}</span>
                       </div>
@@ -290,13 +286,13 @@ export default function AssistantPage() {
 
                   {/* Expandable Evidence Container (Screen 5) */}
                   {msg.evidence && msg.evidence.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+                    <div className="assistant-evidence-drawer">
                       <button
                         type="button"
                         onClick={() => toggleEvidence(index)}
-                        className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+                        className="assistant-evidence-toggle-btn"
                       >
-                        <span className="flex items-center space-x-1.5">
+                        <span className="flex items-center gap-1.5">
                           <BookOpen className="h-3.5 w-3.5 text-blue-600" />
                           <span>Grounded Evidence Citations ({msg.evidenceCount || msg.evidence.length})</span>
                         </span>
@@ -308,27 +304,27 @@ export default function AssistantPage() {
                       </button>
 
                       {msg.showEvidence && (
-                        <div className="px-4 pb-4 pt-1 space-y-3 border-t border-slate-200/60 divide-y divide-slate-200/50">
+                        <div className="assistant-evidence-list">
                           {msg.evidence.map((ev, evIdx) => (
-                            <div key={evIdx} className="pt-3 first:pt-1 space-y-2 text-xs">
-                              <div className="flex flex-wrap items-center justify-between gap-1.5">
-                                <div className="flex items-center space-x-2 min-w-0">
-                                  <div className="p-1 bg-rose-100 text-rose-600 rounded">
+                            <div key={evIdx} className="assistant-evidence-item">
+                              <div className="assistant-evidence-card-top">
+                                <div className="assistant-evidence-title-row">
+                                  <div className="assistant-evidence-icon-box">
                                     <FileText className="h-3.5 w-3.5" />
                                   </div>
-                                  <span className="font-bold text-slate-900 truncate">
+                                  <span className="assistant-evidence-title-text">
                                     {ev.citation_tag ? `${ev.citation_tag} ` : ''}
                                     {ev.case_title || ev.case_number || 'Supreme Court Record'}
                                   </span>
                                 </div>
-                                <div className="flex items-center space-x-1.5 shrink-0">
+                                <div className="flex items-center gap-1.5 shrink-0">
                                   {ev.court_name && (
                                     <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-medium">
                                       {ev.court_name}
                                     </span>
                                   )}
                                   {ev.page_number && (
-                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">
+                                    <span className="assistant-evidence-page-pill">
                                       Page {ev.page_number}
                                     </span>
                                   )}
@@ -336,20 +332,20 @@ export default function AssistantPage() {
                               </div>
 
                               {ev.bench && (
-                                <p className="text-[11px] text-slate-500">
+                                <p className="assistant-evidence-coram">
                                   <span className="font-semibold text-slate-600">Coram:</span> {ev.bench}
                                 </p>
                               )}
 
-                              <p className="text-slate-700 font-serif italic text-xs leading-relaxed bg-white p-3 rounded-lg border border-slate-200/70 shadow-2xs">
+                              <p className="assistant-evidence-quote-box">
                                 &ldquo;{ev.snippet}&rdquo;
                               </p>
 
-                              <div className="flex items-center justify-between pt-1">
+                              <div className="assistant-evidence-links-row">
                                 {ev.case_id ? (
                                   <Link
                                     to={`/cases/${ev.case_id}`}
-                                    className="text-[11px] text-slate-600 hover:text-blue-600 flex items-center space-x-1 font-medium transition"
+                                    className="assistant-evidence-link-dossier"
                                   >
                                     <span>View Case Dossier</span>
                                     <ArrowRight className="h-3 w-3" />
@@ -360,7 +356,7 @@ export default function AssistantPage() {
                                   href={ev.source_url || 'https://registry.opendata.aws/indian-supreme-court-judgments/'}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[11px] text-blue-600 hover:text-blue-800 flex items-center space-x-1 font-semibold"
+                                  className="assistant-evidence-link-source"
                                 >
                                   <span>View Source (AWS Open Data)</span>
                                   <ExternalLink className="h-3 w-3" />
@@ -378,15 +374,15 @@ export default function AssistantPage() {
           })}
 
           {loading && (
-            <div className="flex items-start space-x-3 text-slate-500 text-xs py-2">
-              <div className="h-8 w-8 rounded-full bg-[#0A192F] text-white flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-3 py-2">
+              <div className="assistant-ai-avatar">
                 <Scale className="h-4 w-4 text-blue-400" />
               </div>
-              <div className="flex items-center space-x-2 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-2xs">
-                <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce"></div>
-                <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.2s]"></div>
-                <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.4s]"></div>
-                <span className="ml-2 text-slate-700 font-medium">Retrieving grounded judicial citations & synthesizing holding...</span>
+              <div className="assistant-loading-box">
+                <div className="assistant-bounce-dot"></div>
+                <div className="assistant-bounce-dot [animation-delay:0.2s]"></div>
+                <div className="assistant-bounce-dot [animation-delay:0.4s]"></div>
+                <span className="ml-2">Retrieving grounded judicial citations & synthesizing holding...</span>
               </div>
             </div>
           )}
@@ -395,25 +391,25 @@ export default function AssistantPage() {
         </div>
 
         {/* Input Bar & Disclaimer (Panel 5 in Figma design) */}
-        <div className="space-y-2">
+        <div className="assistant-input-bar-wrapper">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="flex items-center rounded-xl bg-white border border-slate-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 shadow-xs overflow-hidden"
+            className="assistant-input-form"
           >
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ask a question about cases, legal principles, or judgments..."
-              className="flex-1 px-4 py-3.5 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+              className="assistant-chat-input"
             />
             <button
               type="submit"
               disabled={loading || !query.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3.5 flex items-center justify-center transition disabled:opacity-50 cursor-pointer"
+              className="assistant-chat-submit"
               title="Send Message"
             >
               <Send className="h-4 w-4" />
@@ -421,7 +417,7 @@ export default function AssistantPage() {
           </form>
 
           {/* Legal Disclaimer matching Figma Panel 5 bottom */}
-          <p className="text-center text-[11px] text-slate-500">
+          <p className="assistant-bottom-disclaimer">
             NYAYASETU provides informational assistance based on available judicial records. It is not a substitute for professional legal advice.
           </p>
         </div>

@@ -1,0 +1,180 @@
+/* ==========================================================================
+   GraphPage Styles (Judicial Knowledge Graph)
+   ========================================================================== */
+
+.graph-page-container {
+  padding: 1.5rem;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Header */
+.graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.graph-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.graph-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.125rem;
+  margin-bottom: 0;
+}
+
+/* Canvas Box */
+.graph-canvas-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  position: relative;
+}
+
+.graph-viewport {
+  position: relative;
+  width: 100%;
+  height: 540px;
+  background-color: rgba(248, 250, 252, 0.5);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-zoom-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center center;
+}
+
+/* Floating Controls */
+.graph-floating-controls {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 0.25rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.graph-control-btn {
+  padding: 0.375rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.graph-control-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--text-primary);
+}
+
+/* Legend Card */
+.graph-legend-card {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  width: 11rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.graph-legend-heading {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.graph-legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.graph-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+}
+
+.graph-legend-dot {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.legend-dot-case { background-color: #0A192F; }
+.legend-dot-court { background-color: #3B82F6; }
+.legend-dot-judge { background-color: #9333EA; }
+.legend-dot-party { background-color: #10B981; }
+.legend-dot-act { background-color: #6366F1; }
+.legend-dot-section { background-color: #F59E0B; }
+.legend-dot-related { background-color: #EF4444; }
+
+.graph-legend-rels-section {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.5rem;
+}
+
+.graph-legend-rels-heading {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  margin: 0 0 0.375rem 0;
+}
+
+.graph-legend-rels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.graph-legend-rel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}

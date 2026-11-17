@@ -6,10 +6,9 @@ import {
   Bot,
   Folder,
   Building2,
-  Shield,
-  User,
-  Scale
+  Shield
 } from 'lucide-react';
+import './AppLayout.css';
 
 export default function AppLayout({ children }) {
   const location = useLocation();
@@ -36,11 +35,11 @@ export default function AppLayout({ children }) {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] bg-[#F8FAFC]">
+    <div className="app-layout-root">
       {/* Dark Sidebar */}
-      <aside className="w-56 bg-[#0A192F] text-slate-300 flex-shrink-0 hidden md:flex flex-col border-r border-[#1E293B] shadow-sm">
+      <aside className="app-sidebar">
         {/* Sidebar Navigation */}
-        <div className="p-4 space-y-1 flex-1">
+        <div className="app-sidebar-nav">
           {sidebarLinks.map((item) => {
             const Icon = item.icon;
             const active = isLinkActive(item);
@@ -49,13 +48,9 @@ export default function AppLayout({ children }) {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  active
-                    ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/70'
-                }`}
+                className={`app-sidebar-link ${active ? 'active' : ''}`}
               >
-                <Icon className={`h-4 w-4 ${active ? 'text-white' : 'text-slate-400'}`} />
+                <Icon className="app-sidebar-link-icon" />
                 <span>{item.name}</span>
               </Link>
             );
@@ -64,19 +59,19 @@ export default function AppLayout({ children }) {
 
         {/* Sidebar Footer */}
         {user && (
-          <div className="p-4 border-t border-slate-800/80">
+          <div className="app-sidebar-footer">
             <Link
               to="/profile"
-              className="flex items-center space-x-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/60 text-xs text-slate-400 hover:text-slate-200 transition"
+              className="app-sidebar-user-card"
             >
-              <div className="h-7 w-7 rounded-full bg-blue-600 text-white font-bold text-[11px] flex items-center justify-center">
+              <div className="app-sidebar-avatar">
                 {user.username ? user.username.slice(0, 2).toUpperCase() : 'U'}
               </div>
-              <div className="truncate">
-                <p className="font-semibold text-slate-200 text-xs truncate">
+              <div className="app-sidebar-user-info">
+                <p className="app-sidebar-username">
                   {user.first_name ? `${user.first_name}` : user.username}
                 </p>
-                <p className="text-[10px] text-slate-500 capitalize">{user.role || 'Citizen'}</p>
+                <p className="app-sidebar-user-role">{user.role || 'Citizen'}</p>
               </div>
             </Link>
           </div>
@@ -84,10 +79,9 @@ export default function AppLayout({ children }) {
       </aside>
 
       {/* Main Content Pane */}
-      <main className="flex-1 overflow-x-hidden min-w-0">
+      <main className="app-main-pane">
         {children}
       </main>
     </div>
   );
 }
-

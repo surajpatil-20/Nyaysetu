@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Scale, Lock, User, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import './AuthPages.css';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');

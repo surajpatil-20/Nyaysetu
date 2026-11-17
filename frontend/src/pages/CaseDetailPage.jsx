@@ -18,6 +18,7 @@ import {
   Download,
   Check
 } from 'lucide-react';
+import './CaseDetailPage.css';
 
 export default function CaseDetailPage() {
   const { id } = useParams();

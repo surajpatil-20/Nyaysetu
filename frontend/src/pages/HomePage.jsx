@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   Search,
   Bot,
@@ -9,12 +9,13 @@ import {
   Building2,
   Info,
   ArrowRight,
-  Sparkles
-} from 'lucide-react';
-import heroImg from '../assets/hero.png';
+  Sparkles,
+} from "lucide-react";
+import heroImg from "../assets/hero.png";
+import "./HomePage.css";
 
 export default function HomePage() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -26,92 +27,90 @@ export default function HomePage() {
   };
 
   const quickPills = [
-    'child witness testimony',
-    'Section 302 IPC circumstantial evidence',
-    'anticipatory bail Section 438',
-    'speedy trial Article 21',
+    "child witness testimony",
+    "Section 302 IPC circumstantial evidence",
+    "anticipatory bail Section 438",
+    "speedy trial Article 21",
   ];
 
   const quickActions = [
     {
-      title: 'Search Cases',
-      description: 'Precedents, orders & rulings',
+      title: "Search Cases",
+      description: "Precedents, orders & rulings",
       icon: Search,
-      link: '/search',
+      link: "/search",
     },
     {
-      title: 'Ask Judicial AI',
-      description: 'Evidence-grounded answers',
+      title: "Ask Judicial AI",
+      description: "Evidence-grounded answers",
       icon: Bot,
-      link: isAuthenticated ? '/assistant' : '/login',
+      link: isAuthenticated ? "/assistant" : "/login",
     },
     {
-      title: 'Knowledge Graph',
-      description: 'Connected cases, judges & acts',
+      title: "Knowledge Graph",
+      description: "Connected cases, judges & acts",
       icon: Network,
-      link: '/search',
+      link: "/search",
     },
     {
-      title: 'Document Vault',
-      description: 'Private OCR & chunk analysis',
+      title: "Document Vault",
+      description: "Private OCR & chunk analysis",
       icon: Folder,
-      link: '/documents',
+      link: "/documents",
     },
     {
-      title: 'Official Services',
-      description: 'eCourts, NJDG & NALSA portals',
+      title: "Official Services",
+      description: "eCourts, NJDG & NALSA portals",
       icon: Building2,
-      link: '/services',
+      link: "/services",
     },
   ];
 
   return (
-    <div className="bg-[#F8FAFC] min-h-[calc(100vh-64px)] flex flex-col justify-between">
+    <div className="home-page-container">
       {/* Hero Section with Supreme Court Background Image */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0A192F] via-[#0E213D] to-[#0A192F] text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800 flex flex-col items-center justify-center">
+      <section className="home-hero-section">
         {/* Supreme Court Watermark Background */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+        <div className="home-hero-watermark">
           <img
             src={heroImg}
             alt="Supreme Court of India"
-            className="w-[440px] sm:w-[560px] md:w-[680px] max-w-none opacity-15 filter drop-shadow-2xl"
+            className="home-hero-watermark-img"
           />
-          {/* Subtle vignette / gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F] via-transparent to-[#0A192F]/60" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_#0A192F_90%)]" />
+          <div className="home-hero-vignette-overlay" />
+          <div className="home-hero-radial-overlay" />
         </div>
 
         {/* Hero Foreground Content */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+        <div className="home-hero-content">
           {/* Pill Badge */}
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-blue-500/15 border border-blue-400/30 rounded-full text-blue-300 text-xs font-semibold backdrop-blur-xs">
-            <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+          <div className="home-hero-pill">
+            <Sparkles className="h-3.5 w-3.5" />
             <span>AI-Assisted Judicial Information Platform</span>
           </div>
 
           {/* Heading */}
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-sm">
-              NYAYASETU
-            </h1>
-            <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
-              Search real Supreme Court precedents, explore case relationships, and ask evidence-grounded legal questions.
+          <div className="home-hero-title-group">
+            <h1 className="home-hero-title">NYAYASETU</h1>
+            <p className="home-hero-subtitle">
+              Search real Supreme Court precedents, explore case relationships,
+              and ask evidence-grounded legal questions.
             </p>
           </div>
 
           {/* Centered Large Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mt-4">
-            <div className="flex rounded-xl shadow-lg border border-slate-700/80 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden bg-white">
+          <form onSubmit={handleSearch} className="home-search-form">
+            <div className="home-search-box">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search cases, judgments, legal concepts..."
-                className="flex-1 px-5 py-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                className="home-search-input"
               />
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 flex items-center justify-center transition shadow-xs"
+                className="home-search-submit"
                 title="Search Precedents"
               >
                 <Search className="h-5 w-5" />
@@ -120,14 +119,18 @@ export default function HomePage() {
           </form>
 
           {/* Quick Search Chips */}
-          <div className="pt-1 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400">
-            <span className="text-slate-500 font-medium hidden sm:inline">Try searching:</span>
+          <div className="home-pills-row">
+            <span className="home-pills-label hidden sm:inline">
+              Try searching:
+            </span>
             {quickPills.map((pill, idx) => (
               <button
                 key={idx}
                 type="button"
-                onClick={() => navigate(`/search?q=${encodeURIComponent(pill)}`)}
-                className="px-3 py-1 bg-slate-800/80 hover:bg-blue-600 hover:text-white text-slate-300 rounded-lg border border-slate-700/70 transition backdrop-blur-xs text-[11px]"
+                onClick={() =>
+                  navigate(`/search?q=${encodeURIComponent(pill)}`)
+                }
+                className="home-pill-chip"
               >
                 {pill}
               </button>
@@ -137,25 +140,25 @@ export default function HomePage() {
       </section>
 
       {/* Main Content: 5 Clean Quick Action Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
+      <section className="home-content-section">
         {/* Quick Actions Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="home-actions-grid">
           {quickActions.map((action, idx) => {
             const Icon = action.icon;
             return (
               <Link
                 key={idx}
                 to={action.link}
-                className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs hover:shadow-md hover:border-blue-400 transition flex flex-col items-center text-center space-y-2 group"
+                className="home-action-card"
               >
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition shadow-2xs">
+                <div className="home-action-icon-box">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition">
+                  <h3 className="home-action-title">
                     {action.title}
                   </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-normal">
+                  <p className="home-action-description">
                     {action.description}
                   </p>
                 </div>
@@ -166,20 +169,26 @@ export default function HomePage() {
 
         {/* Minimal Informational Note for Logged-Out Users */}
         {!isAuthenticated && (
-          <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-2xs">
-            <div className="flex items-center space-x-3 text-slate-700">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg flex-shrink-0">
+          <div className="home-auth-banner">
+            <div className="home-auth-banner-left">
+              <div className="home-auth-icon-box">
                 <Bot className="h-4 w-4" />
               </div>
               <div>
-                <span className="font-bold text-slate-900">Sign in to use the NYAYASETU AI Assistant</span>
-                <span className="text-slate-500 hidden sm:inline"> — Evidence-grounded answers with Supreme Court citations require an active account.</span>
+                <span className="home-auth-strong">
+                  Sign in to use the NYAYASETU AI Assistant
+                </span>
+                <span className="home-auth-muted-info hidden sm:inline">
+                  {" "}
+                  — Evidence-grounded answers with Supreme Court citations
+                  require an active account.
+                </span>
               </div>
             </div>
             <Link
               to="/login"
-              state={{ from: { pathname: '/assistant' } }}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-xs transition whitespace-nowrap shadow-2xs flex items-center space-x-1"
+              state={{ from: { pathname: "/assistant" } }}
+              className="home-auth-btn-signin"
             >
               <span>Sign In</span>
               <ArrowRight className="h-3 w-3" />
@@ -188,10 +197,13 @@ export default function HomePage() {
         )}
 
         {/* Civic Disclaimer Alert Banner */}
-        <div className="bg-slate-100/80 border border-slate-200 rounded-xl p-3.5 flex items-center space-x-3 text-xs text-slate-600">
-          <Info className="h-4 w-4 text-slate-500 flex-shrink-0" />
+        <div className="home-disclaimer-banner">
+          <Info className="home-disclaimer-icon" />
           <span>
-            NYAYASETU provides informational assistance based on available judicial records. It is not a substitute for professional legal advice and does not predict judicial outcomes or make judicial decisions.
+            NYAYASETU provides informational assistance based on available
+            judicial records. It is not a substitute for professional legal
+            advice and does not predict judicial outcomes or make judicial
+            decisions.
           </span>
         </div>
       </section>

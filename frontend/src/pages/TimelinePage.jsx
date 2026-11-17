@@ -11,6 +11,7 @@ import {
   Clock,
   ArrowLeft
 } from 'lucide-react';
+import './TimelinePage.css';
 
 export default function TimelinePage() {
   const { id } = useParams();

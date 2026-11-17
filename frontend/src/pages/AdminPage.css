@@ -1,0 +1,107 @@
+/* ==========================================================================
+   AdminPage Styles (Platform Administration)
+   ========================================================================== */
+
+.admin-page-container {
+  padding: 1.5rem;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.admin-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.admin-btn-sync {
+  padding: 0.5rem 1rem;
+  background-color: var(--navy-900);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.admin-btn-sync:hover:not(:disabled) {
+  background-color: var(--navy-800);
+}
+
+.admin-btn-sync:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Metric Cards (Screen 8) */
+.admin-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .admin-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-metrics-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.admin-metric-card {
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.admin-metric-num {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0;
+}
+
+.admin-metric-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0;
+}
