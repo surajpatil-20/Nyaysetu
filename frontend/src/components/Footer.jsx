@@ -1,81 +1,107 @@
-import { ShieldAlert, ExternalLink, Scale } from 'lucide-react';
+import { ShieldAlert, ExternalLink, Scale, Database, Network } from 'lucide-react';
 import './Footer.css';
 
 export default function Footer() {
   return (
     <footer className="footer-root">
       <div className="footer-container">
-        {/* Civic Judicial Information Notice */}
-        <div className="footer-disclaimer-box">
-          <ShieldAlert className="footer-disclaimer-icon" />
+
+        {/* Information Notice */}
+        <div className="footer-notice">
+          <ShieldAlert className="footer-notice-icon" />
           <div>
-            <span className="footer-disclaimer-title">Civic Judicial Information Notice:</span>
-            <p className="footer-disclaimer-text">
-              NYAYASETU provides informational assistance based on available judicial records. It is not a substitute for professional legal advice and does not predict judicial outcomes or make judicial decisions. Always consult an enrolled advocate or qualified legal practitioner for actionable legal representation.
+            <strong>Civic Judicial Information Notice</strong>
+            <p>
+              NYAYASETU provides informational assistance based on available
+              judicial records and does not replace professional legal advice
+              or predict judicial outcomes.
             </p>
           </div>
         </div>
 
-        {/* Data Attribution & Official Links */}
-        <div className="footer-grid">
-          <div>
+        {/* Main Footer */}
+        <div className="footer-main">
+
+          {/* Brand */}
+          <div className="footer-brand">
             <div className="footer-brand-title">
-              <Scale className="h-4 w-4 text-blue-500" />
+              <Scale size={18} />
               <span>NYAYASETU</span>
             </div>
-            <p className="footer-text">
-              AI-Assisted, Evidence-Oriented Judicial Information Platform. Real judicial case judgments are sourced from the Indian Supreme Court Judgments Open Dataset via the AWS Open Data Registry under CC BY 4.0.
+
+            <p>
+              AI-Assisted, Evidence-Oriented Judicial Information Platform.
+              Built around authentic Indian Supreme Court judgments and
+              evidence-grounded information retrieval.
             </p>
+
+            <span className="footer-license">
+              Data: Supreme Court Judgments Open Dataset · CC BY 4.0
+            </span>
           </div>
 
-          <div>
-            <h4 className="footer-column-heading">Official Government Portals</h4>
-            <ul className="footer-links-list">
-              <li className="footer-link-item">
-                <a
-                  href="https://main.sci.gov.in/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>Supreme Court of India</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </li>
-              <li className="footer-link-item">
-                <a
-                  href="https://ecourts.gov.in/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>eCourts Services Portal</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </li>
-              <li className="footer-link-item">
-                <a
-                  href="https://nalsa.gov.in/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>National Legal Services Authority (NALSA)</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </li>
-            </ul>
+          {/* Official Portals */}
+          <div className="footer-column">
+            <h4>Official Portals</h4>
+
+            <a
+              href="https://main.sci.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Supreme Court of India
+              <ExternalLink size={13} />
+            </a>
+
+            <a
+              href="https://ecourts.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              eCourts Services
+              <ExternalLink size={13} />
+            </a>
+
+            <a
+              href="https://nalsa.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              NALSA
+              <ExternalLink size={13} />
+            </a>
           </div>
 
-          <div>
-            <h4 className="footer-column-heading">Technical Architecture</h4>
-            <p className="footer-text">
-              Evidence retrieval powered by PostgreSQL <code className="footer-code-tag">pgvector</code> HNSW cosine similarity, <code className="footer-code-tag">BAAI/bge-base-en-v1.5</code> dense embeddings, and Judicial Knowledge Graph exploration.
-            </p>
+          {/* Technology */}
+          <div className="footer-column">
+            <h4>Platform Technology</h4>
+
+            <div className="footer-tech-item">
+              <Database size={15} />
+              <span>PostgreSQL + pgvector</span>
+            </div>
+
+            <div className="footer-tech-item">
+              <Network size={15} />
+              <span>HNSW Semantic Search</span>
+            </div>
+
+            <div className="footer-tech-item">
+              <span className="footer-tech-dot" />
+              <span>BGE Embeddings + Knowledge Graph</span>
+            </div>
           </div>
         </div>
 
-        <div className="footer-bottom-row">
-          <p>© {new Date().getFullYear()} NYAYASETU Platform. Public Legal Information Initiative.</p>
-          <p>Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).</p>
+        {/* Bottom */}
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} NYAYASETU Platform</span>
+
+          <span>
+            Public Legal Information Initiative · CC BY 4.0
+          </span>
         </div>
+
       </div>
     </footer>
   );
