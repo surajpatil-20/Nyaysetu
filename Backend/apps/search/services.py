@@ -101,7 +101,11 @@ def _keyword_search(query: str, filters: dict, limit: int = 50) -> list:
 
     qs = DocumentChunk.objects.select_related(
         "document", "document__case", "document__case__court"
-    ).filter(q)
+    ).filter(q).exclude(
+        document__case__source_name="DEMO SOURCE"
+    ).exclude(
+        document__source_name="DEMO SOURCE"
+    )
 
     # Apply optional filters
     if filters.get("court_id"):
@@ -149,7 +153,11 @@ def _semantic_vector_search(query_vector: list[float], filters: dict, top_k: int
 
     qs = DocumentChunk.objects.select_related(
         "document", "document__case", "document__case__court"
-    ).filter(embedding__isnull=False).annotate(
+    ).filter(embedding__isnull=False).exclude(
+        document__case__source_name="DEMO SOURCE"
+    ).exclude(
+        document__source_name="DEMO SOURCE"
+    ).annotate(
         distance=CosineDistance("embedding", query_vector)
     )
 

@@ -18,10 +18,11 @@ import {
   Calendar,
   AlertCircle
 } from 'lucide-react';
+import { Skeleton } from '../components/Skeleton';
 import './DashboardPage.css';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState({
@@ -42,35 +43,55 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadDashboardData() {
       setLoading(true);
       try {
-        const [statsData, casesData] = await Promise.allSettled([
-          adminApi.getStats(),
-          casesApi.getCases({ limit: 4 }),
-        ]);
+        // Query real Supreme Court precedent records for the dashboard
+        const promises = [
+          casesApi.getCases({ search: 'INSC', limit: 4 }),
+        ];
 
-        if (statsData.status === 'fulfilled' && statsData.value) {
-          setStats((prev) => ({
-            cases: statsData.value.cases ?? prev.cases,
-            courts: statsData.value.courts ?? prev.courts,
-            judges: statsData.value.judges ?? prev.judges,
-            documents: statsData.value.documents ?? prev.documents,
-          }));
+        // RULES 2 & 3: Only request admin statistics if user has the ADMIN role
+        const userIsAdmin = isAdmin || user?.role === 'ADMIN';
+        if (userIsAdmin) {
+          promises.push(adminApi.getStats().catch(() => null));
         }
 
-        if (casesData.status === 'fulfilled' && casesData.value) {
-          const list = casesData.value.results || casesData.value || [];
+        const results = await Promise.allSettled(promises);
+        if (!isMounted) return;
+
+        const casesResult = results[0];
+        if (casesResult.status === 'fulfilled' && casesResult.value) {
+          const list = casesResult.value.results || casesResult.value || [];
           setRecentCases(list.slice(0, 4));
+        }
+
+        if (userIsAdmin && results[1]) {
+          const statsResult = results[1];
+          if (statsResult.status === 'fulfilled' && statsResult.value) {
+            setStats((prev) => ({
+              cases: statsResult.value.cases ?? prev.cases,
+              courts: statsResult.value.courts ?? prev.courts,
+              judges: statsResult.value.judges ?? prev.judges,
+              documents: statsResult.value.documents ?? prev.documents,
+            }));
+          }
         }
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
+
     loadDashboardData();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAdmin, user?.role]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -141,7 +162,11 @@ export default function DashboardPage() {
               <Scale className="h-6 w-6" />
             </div>
             <div className="dashboard-stat-info">
-              <p className="dashboard-stat-value">{stats.cases}</p>
+              {loading ? (
+                <Skeleton variant="title" width="60px" height="1.75rem" />
+              ) : (
+                <p className="dashboard-stat-value">{stats.cases}</p>
+              )}
               <p className="dashboard-stat-label">Judicial Cases</p>
             </div>
           </div>
@@ -151,7 +176,11 @@ export default function DashboardPage() {
               <Building2 className="h-6 w-6" />
             </div>
             <div className="dashboard-stat-info">
-              <p className="dashboard-stat-value">{stats.courts}</p>
+              {loading ? (
+                <Skeleton variant="title" width="40px" height="1.75rem" />
+              ) : (
+                <p className="dashboard-stat-value">{stats.courts}</p>
+              )}
               <p className="dashboard-stat-label">Adjudicating Courts</p>
             </div>
           </div>
@@ -161,7 +190,11 @@ export default function DashboardPage() {
               <BookOpen className="h-6 w-6" />
             </div>
             <div className="dashboard-stat-info">
-              <p className="dashboard-stat-value">{stats.judges}</p>
+              {loading ? (
+                <Skeleton variant="title" width="50px" height="1.75rem" />
+              ) : (
+                <p className="dashboard-stat-value">{stats.judges}</p>
+              )}
               <p className="dashboard-stat-label">Coram Judges</p>
             </div>
           </div>
@@ -171,7 +204,11 @@ export default function DashboardPage() {
               <FileText className="h-6 w-6" />
             </div>
             <div className="dashboard-stat-info">
-              <p className="dashboard-stat-value">{stats.documents}</p>
+              {loading ? (
+                <Skeleton variant="title" width="55px" height="1.75rem" />
+              ) : (
+                <p className="dashboard-stat-value">{stats.documents}</p>
+              )}
               <p className="dashboard-stat-label">Indexed Documents</p>
             </div>
           </div>
@@ -188,8 +225,24 @@ export default function DashboardPage() {
           </div>
 
           {loading ? (
-            <div className="py-8 text-center text-xs text-slate-500">
-              Loading judicial case records...
+            <div className="skeleton-cases-grid" aria-busy="true" aria-live="polite">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="skeleton-case-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <Skeleton variant="pill" width="90px" height="1.125rem" />
+                      <Skeleton variant="title" width="90%" height="1.25rem" />
+                    </div>
+                    <Skeleton variant="circle" width="1.75rem" height="1.75rem" />
+                  </div>
+                  <Skeleton variant="text" width="96%" height="0.875rem" />
+                  <Skeleton variant="text" width="75%" height="0.875rem" />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem', borderTop: '1px solid var(--border-subtle)' }}>
+                    <Skeleton variant="text" width="140px" height="0.75rem" />
+                    <Skeleton variant="pill" width="100px" height="1.25rem" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : recentCases.length > 0 ? (
             <div className="dashboard-cases-grid">

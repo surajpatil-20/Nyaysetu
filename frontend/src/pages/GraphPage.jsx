@@ -14,6 +14,7 @@ import {
   Bookmark,
   FileText
 } from 'lucide-react';
+import { GraphSkeleton } from '../components/Skeleton';
 import './GraphPage.css';
 
 export default function GraphPage() {
@@ -128,9 +129,23 @@ export default function GraphPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="graph-page-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Synthesizing Judicial Knowledge Graph topology...</p>
+        <div className="graph-page-container">
+          <nav className="graph-breadcrumb">
+            <Link to="/search">Cases</Link>
+            <span className="separator">&gt;</span>
+            <Link to={`/cases/${id}`}>Case #{id}</Link>
+            <span className="separator">&gt;</span>
+            <span className="current">Knowledge Graph</span>
+          </nav>
+          <div className="graph-header">
+            <div>
+              <h1 className="graph-title">Case Relationships</h1>
+              <p className="graph-subtitle">
+                Synthesizing knowledge graph ontology and precedent citation networks...
+              </p>
+            </div>
+          </div>
+          <GraphSkeleton />
         </div>
       </AppLayout>
     );

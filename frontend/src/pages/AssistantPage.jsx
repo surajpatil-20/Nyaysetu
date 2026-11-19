@@ -13,6 +13,7 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
+import { AIMessageSkeleton } from '../components/Skeleton';
 import './AssistantPage.css';
 
 const QUICK_PROMPTS = [
@@ -315,16 +316,8 @@ export default function AssistantPage() {
           })}
 
           {loading && (
-            <div className="assistant-ai-msg-row">
-              <div className="assistant-ai-avatar">
-                <Scale className="h-4 w-4" />
-              </div>
-              <div className="assistant-loading-box">
-                <div className="assistant-bounce-dot"></div>
-                <div className="assistant-bounce-dot bounce-2"></div>
-                <div className="assistant-bounce-dot bounce-3"></div>
-                <span className="assistant-loading-text">Synthesizing evidence-grounded judicial holding across 105 precedents...</span>
-              </div>
+            <div className="assistant-ai-msg-row" style={{ maxWidth: '850px' }}>
+              <AIMessageSkeleton />
             </div>
           )}
 

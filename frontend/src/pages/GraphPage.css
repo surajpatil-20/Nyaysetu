@@ -275,3 +275,43 @@
 .graph-triple-target {
   color: var(--text-secondary);
 }
+
+/* ==========================================================================
+   GraphPage Mobile Responsiveness (< 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .graph-page-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+  .graph-canvas-box {
+    display: flex;
+    flex-direction: column;
+  }
+  .graph-viewport {
+    height: 360px;
+  }
+  .graph-legend-card {
+    position: static;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid var(--border-subtle);
+    padding: 1rem;
+    box-shadow: none;
+    background-color: var(--bg-surface);
+  }
+  .graph-legend-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .graph-legend-rels-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+  .graph-triples-grid {
+    grid-template-columns: 1fr;
+  }
+}

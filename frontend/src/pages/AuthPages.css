@@ -203,3 +203,27 @@
   border-color: var(--primary-navy);
   box-shadow: 0 0 0 3px rgba(17, 72, 107, 0.15);
 }
+
+/* ==========================================================================
+   AuthPages Mobile Responsiveness (< 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .auth-page-container {
+    padding: 1.5rem 0.75rem;
+  }
+  .auth-card {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-lg);
+    gap: 1.25rem;
+  }
+  .auth-title {
+    font-size: 1.25rem;
+  }
+  .otp-inputs-grid {
+    gap: 0.35rem;
+  }
+  .otp-box-input {
+    height: 2.75rem;
+    font-size: 1.125rem;
+  }
+}

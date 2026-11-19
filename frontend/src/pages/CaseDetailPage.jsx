@@ -15,6 +15,7 @@ import {
   ArrowRight,
   AlertCircle
 } from 'lucide-react';
+import { CaseDossierSkeleton } from '../components/Skeleton';
 import './CaseDetailPage.css';
 
 export default function CaseDetailPage() {
@@ -60,9 +61,8 @@ export default function CaseDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="case-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Loading judicial case dossier...</p>
+        <div className="case-detail-container">
+          <CaseDossierSkeleton />
         </div>
       </AppLayout>
     );
@@ -132,8 +132,15 @@ export default function CaseDetailPage() {
     || case_parties?.[1]?.name
     || 'Respondent';
 
-  // Dynamic Case Summary
-  const summaryText = description
+  // Dynamic Case Summary & Fixture Handling
+  const isDemoFixture = Boolean(
+    description?.includes('[DEMO DATA') || caseData?.source_name === 'DEMO SOURCE'
+  );
+  const cleanDescription = description
+    ? description.replace(/^\[DEMO DATA\s*[—–-]\s*NOT REAL JUDICIAL RECORD\]\s*/i, '').trim()
+    : '';
+
+  const summaryText = cleanDescription
     || `Precedent judgment delivered by the ${court?.name || 'Supreme Court of India'} in ${case_title} (${case_number}). Coram bench presided over by ${benchNames}. Final disposition status: ${status || 'Disposed'}.`;
 
   // Dynamic Takeaways
@@ -142,7 +149,7 @@ export default function CaseDetailPage() {
     `Jurisdiction: ${court?.name || 'Supreme Court of India'} (${case_type || 'Appellate'}).`,
     `Procedural case disposition: ${status || 'Disposed'}.`,
     ...(decision_date ? [`Judgment pronounced on ${decision_date}.`] : []),
-    ...(description ? [`Evidentiary ratio: ${description.slice(0, 160)}...`] : []),
+    ...(cleanDescription ? [`Evidentiary ratio: ${cleanDescription.slice(0, 160)}...`] : []),
   ];
 
   const tabs = [
@@ -163,6 +170,26 @@ export default function CaseDetailPage() {
           <span className="separator">&gt;</span>
           <span className="current">Case Detail</span>
         </nav>
+
+        {/* Notice for Early Test Fixture Cases */}
+        {isDemoFixture && (
+          <div style={{
+            backgroundColor: 'var(--warning-bg)',
+            border: '1px solid var(--warning-border)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.75rem 1rem',
+            fontSize: '0.75rem',
+            color: 'var(--warning-text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}>
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>
+              <strong>System Notice:</strong> This dossier ({case_number}) is an early development fixture. Official Supreme Court judgment precedents are indexed under verified citations (e.g., <Link to="/cases/105" style={{ textDecoration: 'underline', fontWeight: 700, color: 'inherit' }}>2023 INSC 599 — Pradeep v. State of Haryana</Link>).
+            </span>
+          </div>
+        )}
 
         {/* Case Header Card (Screen 3) */}
         <div className="case-detail-header-card">

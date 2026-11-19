@@ -11,6 +11,7 @@ import {
   Download,
   BookOpen
 } from 'lucide-react';
+import { DocumentDetailSkeleton } from '../components/Skeleton';
 import './DocumentDetailPage.css';
 
 export default function DocumentDetailPage() {
@@ -63,9 +64,8 @@ export default function DocumentDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="doc-detail-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Analyzing document extraction & chunks...</p>
+        <div className="doc-detail-container">
+          <DocumentDetailSkeleton />
         </div>
       </AppLayout>
     );

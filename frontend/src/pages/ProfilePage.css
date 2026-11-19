@@ -171,3 +171,35 @@
 .profile-btn-logout:hover {
   background-color: #fee2e2;
 }
+
+/* ==========================================================================
+   ProfilePage Mobile Responsiveness (< 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .profile-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+  .profile-card {
+    padding: 1.25rem 1rem;
+    gap: 1.25rem;
+  }
+  .profile-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+  .profile-btn-logout {
+    width: 100%;
+    justify-content: center;
+    padding: 0.625rem;
+  }
+}

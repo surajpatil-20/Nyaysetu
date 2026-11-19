@@ -13,6 +13,7 @@ import {
   X,
   Loader2
 } from 'lucide-react';
+import { DocumentsSkeleton } from '../components/Skeleton';
 import './DocumentsPage.css';
 
 const DEFAULT_DOCUMENTS = [
@@ -221,10 +222,7 @@ export default function DocumentsPage() {
         {/* Document List (Screen 6) */}
         <div className="documents-card-list">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3.5rem 1rem', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-              <div className="search-spinner" style={{ margin: '0 auto 0.75rem auto' }}></div>
-              <p style={{ margin: 0 }}>Loading document repository...</p>
-            </div>
+            <DocumentsSkeleton count={4} />
           ) : documents.length > 0 ? (
             documents.map((doc) => {
               const isProcessing = doc.status === 'PROCESSING' || doc.status === 'PENDING';

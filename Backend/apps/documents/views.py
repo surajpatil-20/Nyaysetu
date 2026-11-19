@@ -10,12 +10,23 @@ from .serializers import (
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
-    queryset = Document.objects.select_related('case').all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['case', 'document_type', 'extraction_status', 'language', 'document_date']
     search_fields = ['title', 'case__case_number', 'extracted_text']
     ordering_fields = ['document_date', 'created_at']
+
+    def get_queryset(self):
+        qs = Document.objects.select_related('case')
+        if self.action == 'list':
+            include_demo = self.request.query_params.get('include_demo', '').lower() == 'true'
+            if not include_demo:
+                qs = qs.exclude(source_name='DEMO SOURCE').exclude(case__source_name='DEMO SOURCE')
+            ordering = self.request.query_params.get('ordering', '')
+            if not ordering or ordering == '-document_date':
+                from django.db.models import F
+                qs = qs.order_by(F('document_date').desc(nulls_last=True), '-created_at')
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

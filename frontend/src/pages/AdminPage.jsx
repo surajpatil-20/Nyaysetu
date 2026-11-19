@@ -7,11 +7,12 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
+import { AdminStatsSkeleton } from '../components/Skeleton';
 import './AdminPage.css';
 
 export default function AdminPage() {
   const [stats, setStats] = useState(null);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -97,37 +98,41 @@ export default function AdminPage() {
         )}
 
         {/* 5 KPI Metric Cards (Screen 8) */}
-        <div className="admin-metrics-grid">
-          {/* Total Cases */}
-          <div className="admin-metric-card card-blue">
-            <div className="admin-metric-num">{totalCases}</div>
-            <div className="admin-metric-label">Total Cases</div>
-          </div>
+        {loading ? (
+          <AdminStatsSkeleton />
+        ) : (
+          <div className="admin-metrics-grid">
+            {/* Total Cases */}
+            <div className="admin-metric-card card-blue">
+              <div className="admin-metric-num">{totalCases}</div>
+              <div className="admin-metric-label">Total Cases</div>
+            </div>
 
-          {/* Documents */}
-          <div className="admin-metric-card card-purple">
-            <div className="admin-metric-num">{totalDocuments}</div>
-            <div className="admin-metric-label">Documents</div>
-          </div>
+            {/* Documents */}
+            <div className="admin-metric-card card-purple">
+              <div className="admin-metric-num">{totalDocuments}</div>
+              <div className="admin-metric-label">Documents</div>
+            </div>
 
-          {/* Document Chunks */}
-          <div className="admin-metric-card card-green">
-            <div className="admin-metric-num">{totalChunks}</div>
-            <div className="admin-metric-label">Document Chunks</div>
-          </div>
+            {/* Document Chunks */}
+            <div className="admin-metric-card card-green">
+              <div className="admin-metric-num">{totalChunks}</div>
+              <div className="admin-metric-label">Document Chunks</div>
+            </div>
 
-          {/* Embeddings */}
-          <div className="admin-metric-card card-amber">
-            <div className="admin-metric-num">{totalEmbeddings}</div>
-            <div className="admin-metric-label">Embeddings</div>
-          </div>
+            {/* Embeddings */}
+            <div className="admin-metric-card card-amber">
+              <div className="admin-metric-num">{totalEmbeddings}</div>
+              <div className="admin-metric-label">Embeddings</div>
+            </div>
 
-          {/* Users */}
-          <div className="admin-metric-card card-rose">
-            <div className="admin-metric-num">{totalUsers}</div>
-            <div className="admin-metric-label">Users</div>
+            {/* Users */}
+            <div className="admin-metric-card card-rose">
+              <div className="admin-metric-num">{totalUsers}</div>
+              <div className="admin-metric-label">Users</div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Bottom Two Cards: Dataset Information & System Health (Screen 8) */}
         <div className="admin-info-grid">

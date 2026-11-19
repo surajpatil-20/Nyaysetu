@@ -258,3 +258,34 @@
   color: #10b981;
   stroke-width: 3;
 }
+
+/* ==========================================================================
+   AdminPage Mobile Responsiveness (< 640px & < 540px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .admin-page-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+  .admin-header-actions {
+    width: 100%;
+  }
+  .admin-btn-sync {
+    width: 100%;
+    justify-content: center;
+  }
+  .admin-info-card {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .admin-data-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  .admin-data-val {
+    text-align: left;
+  }
+}

@@ -13,6 +13,7 @@ import {
   BookOpen,
   Scale
 } from 'lucide-react';
+import { SearchSkeleton } from '../components/Skeleton';
 import './SearchPage.css';
 
 const QUICK_TOPICS = [
@@ -42,6 +43,7 @@ export default function SearchPage() {
   const [act, setAct] = useState('');
   const [section, setSection] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Load all cases when no search query is specified
   const loadAllCases = async () => {
@@ -49,7 +51,7 @@ export default function SearchPage() {
     setError(null);
     setIsBrowseMode(true);
     try {
-      const data = await casesApi.getCases({ limit: 30 });
+      const data = await casesApi.getCases({ search: 'INSC', limit: 30 });
       const rawCases = data.results || data || [];
       const mapped = rawCases.map((c) => ({
         case_id: c.id,
@@ -144,9 +146,28 @@ export default function SearchPage() {
   return (
     <AppLayout>
       <div className="search-page-container">
+        {/* Mobile Filter Toggle Header (Visible only on screens < 1024px) */}
+        <div className="search-mobile-filter-toggle-row">
+          <button
+            type="button"
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            className="search-mobile-filter-btn"
+          >
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-[#FFA425]" />
+              <span>{mobileFiltersOpen ? 'Hide Case Filters' : 'Refine by Court, Coram & Act'}</span>
+            </div>
+            <span className="search-mobile-filter-badge">
+              {court !== 'Supreme Court of India' || judge || act || section || startYear !== '1950' || endYear !== '2024'
+                ? 'Active Filters'
+                : mobileFiltersOpen ? 'Collapse' : 'Filters (5)'}
+            </span>
+          </button>
+        </div>
+
         <div className="search-layout-grid">
           {/* Left Column: Filters Card (Screen 2) */}
-          <div className="search-filters-card">
+          <div className={`search-filters-card ${mobileFiltersOpen ? 'mobile-expanded' : 'mobile-collapsed'}`}>
             <div className="search-filters-header">
               <h3 className="search-filters-title">
                 <SlidersHorizontal className="h-4 w-4 text-blue-600" />
@@ -163,7 +184,7 @@ export default function SearchPage() {
             </div>
 
             {/* Filter Form */}
-            <div className="flex flex-col gap-4 text-xs">
+            <div className="search-filters-form">
               {/* Court */}
               <div className="search-filter-group">
                 <label className="search-filter-label">Court</label>
@@ -293,28 +314,20 @@ export default function SearchPage() {
             </form>
 
             {/* Quick Topic Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.75rem' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Explore Topics:</span>
-              {QUICK_TOPICS.map((topic, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleQuickTopic(topic.query)}
-                  style={{
-                    padding: '0.25rem 0.625rem',
-                    borderRadius: 'var(--radius-full)',
-                    border: '1px solid var(--border-subtle)',
-                    backgroundColor: query === topic.query ? 'var(--primary-navy)' : '#ffffff',
-                    color: query === topic.query ? '#ffffff' : 'var(--text-secondary)',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    fontSize: '0.6875rem',
-                    transition: 'all var(--transition-fast)'
-                  }}
-                >
-                  {topic.label}
-                </button>
-              ))}
+            <div className="search-topics-row">
+              <span className="search-topics-label">Explore Topics:</span>
+              <div className="search-topics-pills">
+                {QUICK_TOPICS.map((topic, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleQuickTopic(topic.query)}
+                    className={`search-topic-pill ${query === topic.query ? 'active' : ''}`}
+                  >
+                    {topic.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Results Header */}
@@ -352,13 +365,14 @@ export default function SearchPage() {
               </div>
             )}
 
-            {/* Loading Indicator */}
+            {/* Loading State: Skeleton Cards */}
             {loading && (
-              <div className="search-loading-box">
-                <div className="search-spinner"></div>
-                <p className="search-loading-text">
-                  {query ? 'Retrieving vector embeddings from PostgreSQL pgvector...' : 'Loading indexed case records...'}
-                </p>
+              <div className="search-loading-section">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                  <div className="skeleton-ai-pulsing-dot" />
+                  <span>{query ? 'Retrieving neural vector embeddings & full-text precedents...' : 'Loading authentic Supreme Court judgments...'}</span>
+                </div>
+                <SearchSkeleton count={5} />
               </div>
             )}
 

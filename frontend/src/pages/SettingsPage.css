@@ -348,3 +348,31 @@
   color: var(--text-primary);
   border-color: var(--border-default);
 }
+
+/* ==========================================================================
+   SettingsPage Mobile Responsiveness (< 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .settings-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+  .settings-section-card {
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+  .settings-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .settings-btn-reset {
+    width: 100%;
+    justify-content: center;
+    padding: 0.625rem;
+  }
+  .settings-preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

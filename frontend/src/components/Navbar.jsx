@@ -81,24 +81,6 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => navigate('/search')}
-                  className="navbar-icon-btn"
-                  title="Search Cases"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-                <div className="relative">
-                  <button
-                    type="button"
-                    className="navbar-icon-btn relative"
-                    title="Notifications"
-                  >
-                    <Bell className="h-4 w-4" />
-                    <span className="navbar-bell-dot"></span>
-                  </button>
-                </div>
 
                 {/* User Dropdown */}
                 <div className="relative">
@@ -188,8 +170,22 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="navbar-mobile-toggle">
             <button
+              type="button"
+              onClick={toggleTheme}
+              className="navbar-icon-btn mr-1"
+              title={theme === 'dark' ? 'Switch to Civic Light Mode' : 'Switch to Judicial Dark Mode'}
+              aria-label="Toggle Theme Mode"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-[#FFA425]" />
+              ) : (
+                <Moon className="h-4 w-4 text-[#38BDF8]" />
+              )}
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="navbar-hamburger-btn"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

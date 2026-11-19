@@ -244,7 +244,7 @@ export default function VerifyOtpPage() {
             className="auth-submit-btn"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.375rem' }}
           >
-            <span>{loading ? 'Verifying OTP...' : 'Verify OTP'}</span>
+            <span>{loading ? 'Verifying...' : 'Verify OTP'}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>
@@ -261,7 +261,7 @@ export default function VerifyOtpPage() {
             <RotateCcw className={`h-3.5 w-3.5 ${resending ? 'animate-spin' : ''}`} />
             <span>
               {resending
-                ? 'Sending...'
+                ? 'Sending OTP...'
                 : cooldown > 0
                 ? `Resend in ${cooldown}s`
                 : 'Resend OTP'}

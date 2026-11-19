@@ -7,6 +7,7 @@ import {
   AlertCircle,
   ArrowLeft
 } from 'lucide-react';
+import { TimelineSkeleton } from '../components/Skeleton';
 import './TimelinePage.css';
 
 export default function TimelinePage() {
@@ -34,9 +35,18 @@ export default function TimelinePage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="timeline-page-container" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-          <div className="search-spinner" style={{ margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>Building procedural case timeline...</p>
+        <div className="timeline-page-container">
+          <div className="timeline-page-header">
+            <Link to={`/cases/${id}`} className="timeline-back-link">
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Case Dossier</span>
+            </Link>
+            <h1 className="timeline-page-title">Case Procedural Timeline</h1>
+            <p className="timeline-page-subtitle">Chronological record of judicial filings, hearings, and orders.</p>
+          </div>
+          <div style={{ marginTop: '2rem' }}>
+            <TimelineSkeleton count={5} />
+          </div>
         </div>
       </AppLayout>
     );

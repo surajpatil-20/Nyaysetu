@@ -138,7 +138,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="auth-submit-btn"
           >
-            {loading ? 'Generating OTP...' : 'Register & Verify OTP'}
+            {loading ? 'Creating account...' : 'Create Account & Verify OTP'}
           </button>
         </form>
 

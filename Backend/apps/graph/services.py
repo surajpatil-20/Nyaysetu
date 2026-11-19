@@ -293,7 +293,7 @@ def _get_graph_from_postgres(case: Case) -> dict:
         textual.append(f"Official Record: {doc.title} ({doc.get_document_type_display()})")
 
     # Citations made
-    for cite in CaseCitation.objects.filter(source_case=case).select_related("cited_case"):
+    for cite in CaseCitation.objects.filter(source_case=case).exclude(cited_case__source_name="DEMO SOURCE").select_related("cited_case"):
         if cite.cited_case:
             c2 = cite.cited_case
             c2_id = f"case_{c2.id}"

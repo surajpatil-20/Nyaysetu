@@ -32,7 +32,7 @@ export default function EvidenceCard({ evidence }) {
         </h3>
 
         {/* Real Relevance Indicator & Hybrid Tag */}
-        <div className="flex items-center gap-2">
+        <div className="evidence-badges-group">
           <span className="evidence-hybrid-badge">
             <Sparkles className="h-3 w-3 text-[#FFA425]" />
             <span>Hybrid Match</span>

@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Case, Party, CaseParty, CaseJudge, CaseEvent, CaseCitation
 from .serializers import (
@@ -12,12 +13,24 @@ from .serializers import (
 
 
 class CaseViewSet(viewsets.ModelViewSet):
-    queryset = Case.objects.select_related('court', 'source').all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['court', 'status', 'case_type', 'decision_date', 'filing_date']
     search_fields = ['case_number', 'cnr_number', 'case_title', 'description']
     ordering_fields = ['decision_date', 'filing_date', 'created_at']
+
+    def get_queryset(self):
+        qs = Case.objects.select_related('court', 'source')
+        if self.action == 'list':
+            include_demo = self.request.query_params.get('include_demo', '').lower() == 'true'
+            if not include_demo:
+                qs = qs.exclude(source_name='DEMO SOURCE')
+            ordering = self.request.query_params.get('ordering', '')
+            if not ordering or ordering == '-decision_date':
+                qs = qs.order_by(F('decision_date').desc(nulls_last=True), F('filing_date').desc(nulls_last=True), '-created_at')
+            elif ordering == 'decision_date':
+                qs = qs.order_by(F('decision_date').asc(nulls_last=True), F('filing_date').asc(nulls_last=True), 'created_at')
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -79,8 +92,10 @@ class RelatedCasesView(APIView):
 
         related = []
 
-        # 1. Cases this case cites
-        for citation in CaseCitation.objects.filter(source_case=case, cited_case__isnull=False).select_related('cited_case', 'cited_case__court')[:10]:
+        # 1. Cases this case cites (excluding demo fixtures)
+        for citation in CaseCitation.objects.filter(
+            source_case=case, cited_case__isnull=False
+        ).exclude(cited_case__source_name='DEMO SOURCE').select_related('cited_case', 'cited_case__court')[:10]:
             c = citation.cited_case
             related.append({
                 "id": c.pk,
@@ -93,8 +108,10 @@ class RelatedCasesView(APIView):
                 "reason": f"Directly cited as precedent ({citation.citation_text})",
             })
 
-        # 2. Cases that cite this case
-        for citation in CaseCitation.objects.filter(cited_case=case).select_related('source_case', 'source_case__court')[:10]:
+        # 2. Cases that cite this case (excluding demo fixtures)
+        for citation in CaseCitation.objects.filter(
+            cited_case=case
+        ).exclude(source_case__source_name='DEMO SOURCE').select_related('source_case', 'source_case__court')[:10]:
             c = citation.source_case
             related.append({
                 "id": c.pk,
@@ -107,12 +124,14 @@ class RelatedCasesView(APIView):
                 "reason": f"Cited by this case in judgment ({citation.citation_text})",
             })
 
-        # 3. Cases heard by the same judges
+        # 3. Cases heard by the same judges (excluding demo fixtures, ordered with dated judgments first)
         judge_ids = CaseJudge.objects.filter(case=case).values_list('judge_id', flat=True)
         if judge_ids:
             same_judge_cases = Case.objects.filter(
                 case_judges__judge_id__in=judge_ids
-            ).exclude(pk=case.pk).select_related('court').distinct()[:5]
+            ).exclude(pk=case.pk).exclude(source_name='DEMO SOURCE').select_related('court').order_by(
+                F('decision_date').desc(nulls_last=True)
+            ).distinct()[:5]
             for c in same_judge_cases:
                 related.append({
                     "id": c.pk,

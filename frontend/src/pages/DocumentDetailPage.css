@@ -232,3 +232,29 @@
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* ==========================================================================
+   DocumentDetailPage Mobile Responsiveness (< 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .doc-detail-container {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+  .doc-detail-header-card {
+    padding: 1.25rem 1rem;
+  }
+  .doc-detail-actions {
+    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .doc-detail-btn-pdf,
+  .doc-detail-btn-del {
+    flex: 1;
+    justify-content: center;
+  }
+  .doc-detail-card {
+    padding: 1.25rem 1rem;
+  }
+}

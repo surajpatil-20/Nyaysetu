@@ -316,11 +316,28 @@
 .navbar-mobile-toggle {
   display: flex;
   align-items: center;
+  gap: 0.25rem;
 }
 
 @media (min-width: 768px) {
   .navbar-mobile-toggle {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-brand-title {
+    font-size: 1.0625rem;
+  }
+  .navbar-brand {
+    gap: 0.5rem;
+  }
+  .navbar-brand-icon-box {
+    padding: 0.375rem;
+  }
+  .navbar-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 }
 
