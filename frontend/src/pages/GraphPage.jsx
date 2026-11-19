@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { graphApi } from '../api/graph';
 import AppLayout from '../components/AppLayout';
@@ -11,7 +11,8 @@ import {
   Building2,
   User,
   BookOpen,
-  Bookmark
+  Bookmark,
+  FileText
 } from 'lucide-react';
 import './GraphPage.css';
 
@@ -42,6 +43,87 @@ export default function GraphPage() {
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.15, 1.6));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.15, 0.6));
   const handleResetZoom = () => setZoomLevel(1);
+
+  // Compute dynamic radial layout from actual backend graph data
+  const { centerNode, outerNodes, edges } = useMemo(() => {
+    if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
+      return { centerNode: null, outerNodes: [], edges: [] };
+    }
+
+    const rawNodes = graphData.nodes;
+    const rawLinks = graphData.links || [];
+
+    // Find or create central case node
+    let center = rawNodes.find((n) => n.type === 'Case');
+    const others = rawNodes.filter((n) => n !== center);
+
+    const caseTitle = center?.data?.title || graphData.case_title || graphData.case_number || `Case #${id}`;
+    const caseDocket = center?.data?.case_number || graphData.case_number || '';
+
+    const centerNodeFormatted = {
+      id: center?.id || `case_${id}`,
+      label: caseTitle.length > 30 ? `${caseTitle.slice(0, 28)}...` : caseTitle,
+      sub: caseDocket,
+      type: 'Case',
+      x: 380,
+      y: 220,
+      color: '#11486B',
+      textColor: '#FFFFFF',
+      icon: Scale,
+      size: 52,
+    };
+
+    // Arrange other nodes evenly in an ellipse around (380, 220)
+    const count = others.length;
+    const rx = 210;
+    const ry = 140;
+
+    const typeColors = {
+      Court: { color: '#38BDF8', text: '#0C4A6E', icon: Building2 },
+      Judge: { color: '#9333EA', text: '#581C87', icon: User },
+      Party: { color: '#10B981', text: '#064E3B', icon: User },
+      Act: { color: '#6366F1', text: '#312E81', icon: BookOpen },
+      Section: { color: '#FFA425', text: '#78350F', icon: Bookmark },
+      Document: { color: '#64748B', text: '#0F172A', icon: FileText },
+      'Related Case': { color: '#F43F5E', text: '#881337', icon: Scale },
+    };
+
+    const outerNodesFormatted = others.map((node, i) => {
+      // Angle offset so top node starts at top
+      const angle = (2 * Math.PI * i) / Math.max(count, 1) - Math.PI / 2;
+      const x = Math.round(380 + rx * Math.cos(angle));
+      const y = Math.round(220 + ry * Math.sin(angle));
+
+      const typeMeta = typeColors[node.type] || { color: '#94A3B8', text: '#1E293B', icon: Bookmark };
+
+      // Find relational link connecting this node to case
+      const link = rawLinks.find(
+        (l) => l.target === node.id || l.source === node.id
+      );
+
+      const label = node.label || node.data?.name || node.data?.title || node.id;
+      const splitLabel = label.length > 22 ? `${label.slice(0, 20)}...` : label;
+
+      return {
+        id: node.id,
+        label: splitLabel,
+        type: node.type,
+        x,
+        y,
+        color: typeMeta.color,
+        textColor: typeMeta.text,
+        icon: typeMeta.icon,
+        size: 38,
+        rel: link?.type || node.type.toUpperCase(),
+      };
+    });
+
+    return {
+      centerNode: centerNodeFormatted,
+      outerNodes: outerNodesFormatted,
+      edges: outerNodesFormatted,
+    };
+  }, [graphData, id]);
 
   if (loading) {
     return (
@@ -82,137 +164,7 @@ export default function GraphPage() {
     );
   }
 
-  const { case_number, textual_relationships } = graphData;
-
-  // Static radial node positions matching Screen 4 layout for high visual fidelity
-  const radialNodes = [
-    // Center Case Node
-    {
-      id: 'center-case',
-      label: 'Pradeep v.\nState of Haryana',
-      sub: '(2023 INSC 599)',
-      type: 'Case',
-      x: 380,
-      y: 220,
-      color: '#11486B',
-      textColor: '#FFFFFF',
-      icon: Scale,
-      size: 54,
-    },
-    // Top: Court
-    {
-      id: 'court',
-      label: 'Supreme Court\nof India',
-      type: 'Court',
-      x: 380,
-      y: 70,
-      color: '#38BDF8',
-      textColor: '#0C4A6E',
-      icon: Building2,
-      size: 40,
-      rel: 'FILED_IN',
-    },
-    // Left: Parties
-    {
-      id: 'party-1',
-      label: 'Pradeep\n(Appellant)',
-      type: 'Party',
-      x: 200,
-      y: 140,
-      color: '#10B981',
-      textColor: '#064E3B',
-      icon: User,
-      size: 40,
-      rel: 'HAS_PARTY',
-    },
-    {
-      id: 'party-2',
-      label: 'State of\nHaryana\n(Respondent)',
-      type: 'Party',
-      x: 200,
-      y: 280,
-      color: '#10B981',
-      textColor: '#064E3B',
-      icon: User,
-      size: 40,
-      rel: 'HAS_PARTY',
-    },
-    // Right: Judges
-    {
-      id: 'judge-1',
-      label: 'Justice A.S.\nBopanna',
-      type: 'Judge',
-      x: 560,
-      y: 140,
-      color: '#9333EA',
-      textColor: '#581C87',
-      icon: User,
-      size: 40,
-      rel: 'HEARD_BY',
-    },
-    {
-      id: 'judge-2',
-      label: 'Justice C.D.\nMehta',
-      type: 'Judge',
-      x: 560,
-      y: 280,
-      color: '#9333EA',
-      textColor: '#581C87',
-      icon: User,
-      size: 40,
-      rel: 'HEARD_BY',
-    },
-    // Bottom-Left: Acts & Sections
-    {
-      id: 'act',
-      label: 'IPC, 1860\n(Act)',
-      type: 'Act',
-      x: 230,
-      y: 380,
-      color: '#6366F1',
-      textColor: '#312E81',
-      icon: BookOpen,
-      size: 38,
-      rel: 'REFERENCES_ACT',
-    },
-    {
-      id: 'sec-302',
-      label: 'Sec. 302\n(Section)',
-      type: 'Section',
-      x: 350,
-      y: 390,
-      color: '#FFA425',
-      textColor: '#78350F',
-      icon: Bookmark,
-      size: 36,
-      rel: 'REFERENCES_SECTION',
-    },
-    {
-      id: 'sec-34',
-      label: 'Sec. 34\n(Section)',
-      type: 'Section',
-      x: 460,
-      y: 390,
-      color: '#FFA425',
-      textColor: '#78350F',
-      icon: Bookmark,
-      size: 36,
-      rel: 'REFERENCES_SECTION',
-    },
-    // Bottom-Right: Related Case
-    {
-      id: 'related-case',
-      label: 'Related Case:\nS. Narahari v.\nS.R. Kumar',
-      type: 'Related Case',
-      x: 610,
-      y: 380,
-      color: '#F43F5E',
-      textColor: '#881337',
-      icon: Scale,
-      size: 42,
-      rel: 'CITES (Related)',
-    },
-  ];
+  const { case_number, case_title, textual_relationships } = graphData;
 
   const legendNodes = [
     { label: 'Case', color: '#11486B' },
@@ -236,12 +188,12 @@ export default function GraphPage() {
   return (
     <AppLayout>
       <div className="graph-page-container">
-        {/* Breadcrumb Navigation (Screen 4) */}
+        {/* Breadcrumb Navigation */}
         <nav className="graph-breadcrumb">
           <Link to="/search">Cases</Link>
           <span className="separator">&gt;</span>
-          <Link to={`/cases/${id}`}>
-            {graphData.case_title || case_number || 'Pradeep v. State of Haryana'}
+          <Link to={`/cases/${id}`} style={{ maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {case_title || case_number || `Case #${id}`}
           </Link>
           <span className="separator">&gt;</span>
           <span className="current">Knowledge Graph</span>
@@ -252,12 +204,12 @@ export default function GraphPage() {
           <div>
             <h1 className="graph-title">Case Relationships</h1>
             <p className="graph-subtitle">
-              Visual ontology model synthesized from Supreme Court citation networks and statutory entities.
+              Visual ontology model synthesized from precedent citation networks and statutory entities for {case_number || case_title}.
             </p>
           </div>
         </div>
 
-        {/* Central Graph Canvas & Legend Container (Screen 4) */}
+        {/* Central Graph Canvas & Legend Container */}
         <div className="graph-canvas-box">
           <div className="graph-viewport">
             {/* SVG Graph View */}
@@ -267,14 +219,14 @@ export default function GraphPage() {
             >
               <svg viewBox="0 0 760 480" style={{ width: '100%', height: '100%', maxWidth: '760px', maxHeight: '480px' }}>
                 {/* Edges from Center Case Node */}
-                {radialNodes.slice(1).map((node) => (
+                {edges.map((node) => (
                   <g key={`edge-${node.id}`}>
                     <line
                       x1={380}
                       y1={220}
                       x2={node.x}
                       y2={node.y}
-                      stroke="#94A3B8"
+                      stroke="#CBD5E1"
                       strokeWidth="1.5"
                       strokeDasharray={node.type === 'Related Case' ? '4 3' : 'none'}
                     />
@@ -296,75 +248,97 @@ export default function GraphPage() {
                   </g>
                 ))}
 
-                {/* Nodes */}
-                {radialNodes.map((node) => {
-                  const isCenter = node.id === 'center-case';
-
-                  return (
-                    <g
-                      key={node.id}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setSelectedNode(node)}
+                {/* Outer Nodes */}
+                {outerNodes.map((node) => (
+                  <g
+                    key={node.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setSelectedNode(node)}
+                  >
+                    <circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={node.size}
+                      fill={node.color}
+                      stroke="#FFFFFF"
+                      strokeWidth="3"
+                      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
+                    />
+                    <text
+                      x={node.x}
+                      y={node.y - 2}
+                      textAnchor="middle"
+                      fill={node.textColor || '#FFFFFF'}
+                      fontSize="8"
+                      fontWeight="bold"
+                      fontFamily="sans-serif"
+                      style={{ pointerEvents: 'none', userSelect: 'none' }}
                     >
-                      {/* Node Circle */}
-                      <circle
-                        cx={node.x}
-                        cy={node.y}
-                        r={node.size}
-                        fill={node.color}
-                        stroke="#FFFFFF"
-                        strokeWidth="3"
-                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
-                      />
+                      {node.label}
+                    </text>
+                    <text
+                      x={node.x}
+                      y={node.y + 9}
+                      textAnchor="middle"
+                      fill={node.textColor || '#FFFFFF'}
+                      fontSize="7"
+                      fontWeight="normal"
+                      fontFamily="sans-serif"
+                      style={{ pointerEvents: 'none', userSelect: 'none', opacity: 0.85 }}
+                    >
+                      {node.type}
+                    </text>
+                  </g>
+                ))}
 
-                      {/* Labels */}
+                {/* Center Case Node */}
+                {centerNode && (
+                  <g
+                    key={centerNode.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setSelectedNode(centerNode)}
+                  >
+                    <circle
+                      cx={centerNode.x}
+                      cy={centerNode.y}
+                      r={centerNode.size}
+                      fill={centerNode.color}
+                      stroke="#FFFFFF"
+                      strokeWidth="4"
+                      style={{ filter: 'drop-shadow(0 3px 8px rgba(17,72,107,0.3))' }}
+                    />
+                    <text
+                      x={centerNode.x}
+                      y={centerNode.y - 4}
+                      textAnchor="middle"
+                      fill={centerNode.textColor}
+                      fontSize="9"
+                      fontWeight="bold"
+                      fontFamily="sans-serif"
+                      style={{ pointerEvents: 'none', userSelect: 'none' }}
+                    >
+                      {centerNode.label}
+                    </text>
+                    {centerNode.sub && (
                       <text
-                        x={node.x}
-                        y={node.y - (isCenter ? 10 : 6)}
+                        x={centerNode.x}
+                        y={centerNode.y + 12}
                         textAnchor="middle"
-                        fill={node.textColor || '#FFFFFF'}
-                        fontSize={isCenter ? '10' : '8'}
-                        fontWeight="bold"
+                        fill="#93C5FD"
+                        fontSize="8"
+                        fontWeight="normal"
                         fontFamily="sans-serif"
                         style={{ pointerEvents: 'none', userSelect: 'none' }}
                       >
-                        {node.label.split('\n')[0]}
+                        {centerNode.sub}
                       </text>
-                      {node.label.split('\n')[1] && (
-                        <text
-                          x={node.x}
-                          y={node.y + (isCenter ? 6 : 6)}
-                          textAnchor="middle"
-                          fill={node.textColor || '#FFFFFF'}
-                          fontSize={isCenter ? '9' : '7'}
-                          fontWeight="normal"
-                          fontFamily="sans-serif"
-                          style={{ pointerEvents: 'none', userSelect: 'none' }}
-                        >
-                          {node.label.split('\n')[1]}
-                        </text>
-                      )}
-                      {node.sub && (
-                        <text
-                          x={node.x}
-                          y={node.y + 20}
-                          textAnchor="middle"
-                          fill="#93C5FD"
-                          fontSize="8"
-                          fontWeight="normal"
-                          fontFamily="sans-serif"
-                          style={{ pointerEvents: 'none', userSelect: 'none' }}
-                        >
-                          {node.sub}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
+                    )}
+                  </g>
+                )}
               </svg>
             </div>
 
-            {/* Bottom-Left Zoom Controls (Screen 4) */}
+            {/* Bottom-Left Zoom Controls */}
             <div className="graph-floating-controls">
               <button
                 type="button"
@@ -392,7 +366,7 @@ export default function GraphPage() {
               </button>
             </div>
 
-            {/* Right Legend Card (Screen 4) */}
+            {/* Right Legend Card */}
             <div className="graph-legend-card">
               <div>
                 <h4 className="graph-legend-heading">Legend</h4>
@@ -421,7 +395,7 @@ export default function GraphPage() {
           </div>
         </div>
 
-        {/* Grounded Knowledge Graph Triples (Screen 4 bottom) */}
+        {/* Grounded Knowledge Graph Triples */}
         <div className="graph-triples-card">
           <h3 className="graph-triples-heading">Grounded Knowledge Graph Triples</h3>
           {textual_relationships && textual_relationships.length > 0 ? (
@@ -435,28 +409,9 @@ export default function GraphPage() {
               ))}
             </div>
           ) : (
-            <div className="graph-triples-grid">
-              <div className="graph-triple-item">
-                <span className="graph-triple-source">Pradeep v. State of Haryana</span>
-                <span className="graph-triple-type">FILED_IN</span>
-                <span className="graph-triple-target">Supreme Court of India</span>
-              </div>
-              <div className="graph-triple-item">
-                <span className="graph-triple-source">Pradeep v. State of Haryana</span>
-                <span className="graph-triple-type">HEARD_BY</span>
-                <span className="graph-triple-target">Justice A.S. Bopanna, Justice C.D. Mehta</span>
-              </div>
-              <div className="graph-triple-item">
-                <span className="graph-triple-source">Pradeep v. State of Haryana</span>
-                <span className="graph-triple-type">REFERENCES_ACT</span>
-                <span className="graph-triple-target">Indian Penal Code, 1860</span>
-              </div>
-              <div className="graph-triple-item">
-                <span className="graph-triple-source">Pradeep v. State of Haryana</span>
-                <span className="graph-triple-type">REFERENCES_SECTION</span>
-                <span className="graph-triple-target">Section 302, Section 34</span>
-              </div>
-            </div>
+            <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+              No explicit citation triples registered for this record. Relational nodes are mapped directly from judicial database entities.
+            </p>
           )}
         </div>
       </div>

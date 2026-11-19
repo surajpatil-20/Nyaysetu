@@ -16,10 +16,11 @@ import {
 import './AssistantPage.css';
 
 const QUICK_PROMPTS = [
-  'What was held regarding child witness testimony in Pradeep v State of Haryana?',
-  'Competency of child witness under Section 118 Evidence Act',
   'Principles of natural justice in S. Narahari v S.R. Kumar',
+  'Motor accident third-party compensation in T.J. Parameshwarappa',
   'Standard of proof in criminal appeals in Union of India v Munshi Ram',
+  'Taxation principles in Santhosh Maize v State of Tamil Nadu',
+  'Child witness testimony in Pradeep v State of Haryana',
 ];
 
 /**
@@ -100,29 +101,12 @@ export default function AssistantPage() {
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState([
     {
-      role: 'user',
-      content: 'What was held regarding child witness testimony in Pradeep v State of Haryana?',
-    },
-    {
       role: 'assistant',
       content:
-        'In Pradeep v. State of Haryana (2023 INSC 599), the Supreme Court held that the testimony of a child witness can form the sole basis of conviction if it is found to be credible, trustworthy, and free from material contradictions. The Court reiterated that corroboration, though desirable, is not an absolute requirement.\n\n### Key Legal Principles\n- **Witness Competency**: Under Section 118 of the Evidence Act, 1872, a child witness is competent to testify if capable of understanding questions and giving rational answers.\n- **Risk of Tutoring**: The Court sounded a note of caution that children are susceptible to tutoring, requiring the judge to carefully evaluate preliminary examination and demeanor.\n\n### Disposition\n- The conviction under Section 302/34 IPC was scrutinized on the evidentiary reliability of PW-1, reaffirming established Supreme Court jurisprudence on juvenile depositions.',
-      evidenceCount: 5,
-      evidence: [
-        {
-          citation_tag: '[Evidence 1]',
-          case_id: 1,
-          case_title: 'Pradeep v. State of Haryana (2023 INSC 599)',
-          case_number: '2023 INSC 599',
-          page_number: 1,
-          court_name: 'Supreme Court of India',
-          bench: 'ABHAY S. OKA, P.K. MISHRA',
-          snippet:
-            '...ony of child witness - Sole basis of conviction - When not proper - Appellant along with co-accused convicted under s. 302/34, IPC...',
-          source_url: 'https://indian-supreme-court-judgments.s3.amazonaws.com/2023/INSC_599.pdf',
-        },
-      ],
-      showEvidence: true,
+        '### Welcome to NYAYASETU Evidence-Grounded Legal Research\nI am your judicial research assistant, grounded across **105 Supreme Court precedents** and **2,058 indexed document chunks**.\n\nYou can ask inquiries regarding any case in our repository (e.g. natural justice in *S. Narahari*, motor accident claims in *T.J. Parameshwarappa*, tax disputes in *Santhosh Maize*, or criminal appeals in *Union of India v. Munshi Ram*).\n\nSelect a suggested topic above or type your inquiry below.',
+      evidenceCount: 0,
+      evidence: [],
+      showEvidence: false,
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -191,7 +175,7 @@ export default function AssistantPage() {
   return (
     <AppLayout>
       <div className="assistant-container">
-        {/* Header (Panel 5 in Figma design) */}
+        {/* Header */}
         <div className="assistant-header">
           <div>
             <div className="assistant-title-group">
@@ -199,7 +183,7 @@ export default function AssistantPage() {
               <span className="assistant-badge-pill">Evidence Grounded</span>
             </div>
             <p className="assistant-subtitle">
-              Ask questions about judicial cases, legal principles, or specific judgments.
+              Ask questions about judicial cases, legal principles, or specific precedents across India's Supreme Court jurisprudence.
             </p>
           </div>
         </div>
@@ -256,7 +240,7 @@ export default function AssistantPage() {
                     )}
                   </div>
 
-                  {/* Expandable Evidence Card (Screen 5) */}
+                  {/* Expandable Evidence Card */}
                   {msg.evidence && msg.evidence.length > 0 && (
                     <div className="assistant-evidence-drawer">
                       <button
@@ -284,7 +268,7 @@ export default function AssistantPage() {
                                     <FileText className="h-4 w-4" />
                                   </div>
                                   <span className="assistant-evidence-title-text">
-                                    {ev.case_title || ev.case_number || 'Pradeep v. State of Haryana (2023 INSC 599)'}
+                                    {ev.case_title || ev.case_number || 'Supreme Court Precedent'}
                                   </span>
                                 </div>
                                 <div className="assistant-evidence-tags">
@@ -295,7 +279,7 @@ export default function AssistantPage() {
                               </div>
 
                               <p className="assistant-evidence-quote-box">
-                                {ev.snippet || '...ony of child witness - Sole basis of conviction - When not proper - Appellant along with co-accused convicted under s. 302/34, IPC...'}
+                                {ev.snippet || '...grounded quotation extracted from judgment record...'}
                               </p>
 
                               <div className="assistant-evidence-links-row">
@@ -310,7 +294,7 @@ export default function AssistantPage() {
                                 ) : <div />}
 
                                 <a
-                                  href={ev.source_url || 'https://indian-supreme-court-judgments.s3.amazonaws.com/2023/INSC_599.pdf'}
+                                  href={ev.source_url || 'https://indian-supreme-court-judgments.s3.amazonaws.com/'}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="assistant-evidence-link-source"
@@ -339,7 +323,7 @@ export default function AssistantPage() {
                 <div className="assistant-bounce-dot"></div>
                 <div className="assistant-bounce-dot bounce-2"></div>
                 <div className="assistant-bounce-dot bounce-3"></div>
-                <span className="assistant-loading-text">Synthesizing evidence-grounded judicial holding...</span>
+                <span className="assistant-loading-text">Synthesizing evidence-grounded judicial holding across 105 precedents...</span>
               </div>
             </div>
           )}
@@ -347,7 +331,7 @@ export default function AssistantPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar & Disclaimer (Panel 5 in Figma design) */}
+        {/* Input Bar & Disclaimer */}
         <div className="assistant-input-bar-wrapper">
           <form
             onSubmit={(e) => {
@@ -360,7 +344,7 @@ export default function AssistantPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ask a question..."
+              placeholder="Ask a question about any precedent, legal doctrine, or statutory section..."
               className="assistant-chat-input"
             />
             <button
@@ -373,7 +357,7 @@ export default function AssistantPage() {
             </button>
           </form>
 
-          {/* Legal Disclaimer matching Figma Panel 5 bottom */}
+          {/* Legal Disclaimer */}
           <p className="assistant-bottom-disclaimer">
             NYAYASETU provides informational assistance based on available judicial records. It is not a substitute for professional legal advice.
           </p>

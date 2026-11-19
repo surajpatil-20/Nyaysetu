@@ -111,6 +111,7 @@ export default function CaseDetailPage() {
     citations_received,
     source_url,
     documents,
+    case_type,
   } = caseData;
 
   // Format judges
@@ -118,9 +119,31 @@ export default function CaseDetailPage() {
     ? case_judges.map((j) => j.judge_name || j.name || 'Judge').join(', ')
     : 'Hon’ble Supreme Court Bench';
 
-  // Format parties
-  const appellant = case_parties?.find((p) => p.party_type === 'APPELLANT' || p.party_type === 'PETITIONER')?.name || 'Appellant';
-  const respondent = case_parties?.find((p) => p.party_type === 'RESPONDENT')?.name || 'State of Haryana';
+  // Format parties dynamically
+  const appellant = case_parties?.find((p) => p.party_type === 'APPELLANT' || p.party_type === 'PETITIONER')?.party_name
+    || case_parties?.find((p) => p.party_type === 'APPELLANT' || p.party_type === 'PETITIONER')?.name
+    || case_parties?.[0]?.party_name
+    || case_parties?.[0]?.name
+    || 'Petitioner / Appellant';
+
+  const respondent = case_parties?.find((p) => p.party_type === 'RESPONDENT')?.party_name
+    || case_parties?.find((p) => p.party_type === 'RESPONDENT')?.name
+    || case_parties?.[1]?.party_name
+    || case_parties?.[1]?.name
+    || 'Respondent';
+
+  // Dynamic Case Summary
+  const summaryText = description
+    || `Precedent judgment delivered by the ${court?.name || 'Supreme Court of India'} in ${case_title} (${case_number}). Coram bench presided over by ${benchNames}. Final disposition status: ${status || 'Disposed'}.`;
+
+  // Dynamic Takeaways
+  const takeaways = [
+    `Adjudicated by ${benchNames}.`,
+    `Jurisdiction: ${court?.name || 'Supreme Court of India'} (${case_type || 'Appellate'}).`,
+    `Procedural case disposition: ${status || 'Disposed'}.`,
+    ...(decision_date ? [`Judgment pronounced on ${decision_date}.`] : []),
+    ...(description ? [`Evidentiary ratio: ${description.slice(0, 160)}...`] : []),
+  ];
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -147,13 +170,13 @@ export default function CaseDetailPage() {
             <div className="case-detail-title-group">
               <h1 className="case-detail-title">{case_title}</h1>
               <div className="case-detail-meta-pills">
-                <span className="case-detail-num-badge">{case_number || '2023 INSC 599'}</span>
+                <span className="case-detail-num-badge">{case_number || 'Precedent Record'}</span>
                 <span>•</span>
                 <span>{court?.name || 'Supreme Court of India'}</span>
                 <span>•</span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                   <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                  <span>{decision_date || '24 Aug 2023'}</span>
+                  <span>{decision_date || 'Pronounced Judgment'}</span>
                 </span>
               </div>
             </div>
@@ -223,13 +246,13 @@ export default function CaseDetailPage() {
                 <div className="case-info-row">
                   <span className="case-info-label">Case Number</span>
                   <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
-                    {case_number || '2023 INSC 599'}
+                    {case_number || 'Precedent Record'}
                   </span>
                 </div>
                 <div className="case-info-row">
                   <span className="case-info-label">CNR</span>
                   <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
-                    {cnr_number || 'SC/012345/2023'}
+                    {cnr_number || `INSC/${id}/RECORD`}
                   </span>
                 </div>
                 <div className="case-info-row">
@@ -243,12 +266,12 @@ export default function CaseDetailPage() {
                 <div className="case-info-row">
                   <span className="case-info-label">Parties</span>
                   <span className="case-info-val">
-                    {appellant} (Appellant) vs. {respondent} (Respondent)
+                    {appellant} (Petitioner/Appellant) vs. {respondent} (Respondent)
                   </span>
                 </div>
                 <div className="case-info-row">
                   <span className="case-info-label">Decision Date</span>
-                  <span className="case-info-val">{decision_date || '24 Aug 2023'}</span>
+                  <span className="case-info-val">{decision_date || 'Pronounced'}</span>
                 </div>
                 <div className="case-info-row">
                   <span className="case-info-label">Status</span>
@@ -257,13 +280,13 @@ export default function CaseDetailPage() {
                   </div>
                 </div>
                 <div className="case-info-row">
-                  <span className="case-info-label">Acts</span>
-                  <span className="case-info-val">Indian Penal Code, 1860</span>
+                  <span className="case-info-label">Case Type</span>
+                  <span className="case-info-val">{case_type || 'Appellate Precedent Jurisdiction'}</span>
                 </div>
                 <div className="case-info-row">
-                  <span className="case-info-label">Sections</span>
-                  <span className="case-info-val" style={{ fontFamily: 'monospace' }}>
-                    302, 34
+                  <span className="case-info-label">Registry Source</span>
+                  <span className="case-info-val">
+                    {caseData.source_name || 'Indian Supreme Court Open Dataset (AWS)'}
                   </span>
                 </div>
               </div>
@@ -275,8 +298,7 @@ export default function CaseDetailPage() {
               <div className="case-summary-card">
                 <h3 className="case-card-heading">Case Summary</h3>
                 <p className="case-summary-text">
-                  {description ||
-                    `The Supreme Court examined the conviction of the appellant under Section 302/34 of the IPC, focusing on the evidentiary value of the child witness testimony. The Court discussed the conditions under which the testimony of a child witness can form the sole basis of conviction.`}
+                  {summaryText}
                 </p>
               </div>
 
@@ -284,9 +306,9 @@ export default function CaseDetailPage() {
               <div className="case-summary-card">
                 <h3 className="case-card-heading">Key Takeaways</h3>
                 <ul className="case-takeaways-list">
-                  <li>Testimony of a child witness can be relied upon if found credible and trustworthy.</li>
-                  <li>Corroboration, though desirable, is not an absolute rule of law.</li>
-                  <li>The Court reaffirmed principles for evaluating child witness testimony.</li>
+                  {takeaways.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -349,7 +371,7 @@ export default function CaseDetailPage() {
                     </a>
                   </div>
                 ) : (
-                  'No attached documents found.'
+                  'No attached documents found for this precedent.'
                 )}
               </div>
             )}
@@ -389,7 +411,9 @@ export default function CaseDetailPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>No timeline events recorded.</p>
+              <p style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+                Decision pronounced on {decision_date || 'record'}. Additional interlocutory orders not individually indexed.
+              </p>
             )}
           </div>
         )}
@@ -412,7 +436,7 @@ export default function CaseDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>None recorded.</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>No citations made recorded.</p>
                 )}
               </div>
 
@@ -429,7 +453,7 @@ export default function CaseDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>None recorded.</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>No citing precedents recorded.</p>
                 )}
               </div>
             </div>
@@ -453,7 +477,9 @@ export default function CaseDetailPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>No related cases found.</p>
+              <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+                No substantively linked companion cases indexed in current phase.
+              </p>
             )}
           </div>
         )}
@@ -466,7 +492,7 @@ export default function CaseDetailPage() {
                 <h3 className="case-card-heading">Knowledge Graph Overview</h3>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                   {graphData
-                    ? `Knowledge Graph contains ${graphData.nodes?.length || 0} nodes and ${graphData.links?.length || 0} relational edges spanning courts, benches, parties, and statutory sections.`
+                    ? `Knowledge Graph contains ${graphData.nodes?.length || 0} relational nodes and ${graphData.links?.length || 0} edges for this specific precedent.`
                     : 'Relational knowledge graph topology ready for exploration.'}
                 </p>
               </div>

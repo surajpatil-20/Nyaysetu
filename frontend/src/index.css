@@ -27,14 +27,14 @@
   --blue-100: #E2EEF7;
   --blue-50: #F0F6FB;
 
-  /* Surface & Background Colors */
+  /* Surface & Background Colors (Light Mode) */
   --bg-canvas: #F8FAFC;
   --bg-surface: #FFFFFF;
   --bg-subtle: #F1F5F9;
   --bg-sidebar: #0A2540;
   --bg-sidebar-active: #11486B;
 
-  /* Typography / Text Colors */
+  /* Typography / Text Colors (Light Mode) */
   --text-primary: #0B1B2B;
   --text-secondary: #334155;
   --text-muted: #64748B;
@@ -42,7 +42,7 @@
   --text-on-dark: #FFFFFF;
   --text-on-dark-muted: #94A3B8;
 
-  /* Borders & Dividers */
+  /* Borders & Dividers (Light Mode) */
   --border-subtle: #E2E8F0;
   --border-default: #CBD5E1;
   --border-strong: #94A3B8;
@@ -83,6 +83,116 @@
   --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ==========================================================================
+   Dark Theme System [data-theme="dark"]
+   ========================================================================== */
+[data-theme="dark"],
+.dark {
+  /* Surfaces & Backgrounds */
+  --bg-canvas: #07111E;
+  --bg-surface: #0E1C2F;
+  --bg-subtle: #14273E;
+  --bg-sidebar: #050D18;
+  --bg-sidebar-active: #11486B;
+
+  /* Typography & Text */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #8BA0B8;
+  --text-light: #627891;
+  --text-on-dark: #FFFFFF;
+  --text-on-dark-muted: #8BA0B8;
+
+  /* Borders & Outlines */
+  --border-subtle: #1C3350;
+  --border-default: #26446A;
+  --border-strong: #3E6697;
+  --border-sidebar: #122438;
+
+  /* Accents in Dark Mode */
+  --blue-600: #38BDF8;
+  --blue-700: #60A5FA;
+  --blue-500: #38BDF8;
+  --blue-100: #132F52;
+  --blue-50: #0C2037;
+
+  /* Functional Status Colors in Dark Mode */
+  --success-bg: rgba(16, 185, 129, 0.16);
+  --success-text: #34D399;
+  --success-border: rgba(16, 185, 129, 0.35);
+  --warning-bg: rgba(245, 158, 11, 0.16);
+  --warning-text: #FBBF24;
+  --warning-border: rgba(245, 158, 11, 0.35);
+  --danger-bg: rgba(239, 68, 68, 0.16);
+  --danger-text: #F87171;
+  --danger-border: rgba(239, 68, 68, 0.35);
+
+  /* Elevation Shadows in Dark Mode */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.65);
+}
+
+/* ==========================================================================
+   Dark Mode Utility & Surface Overrides
+   ========================================================================== */
+[data-theme="dark"] .bg-white,
+.dark .bg-white {
+  background-color: var(--bg-surface) !important;
+}
+
+[data-theme="dark"] .bg-\[\#F8FAFC\],
+.dark .bg-\[\#F8FAFC\],
+[data-theme="dark"] .bg-slate-50,
+.dark .bg-slate-50 {
+  background-color: var(--bg-canvas) !important;
+}
+
+[data-theme="dark"] .border-slate-200,
+.dark .border-slate-200,
+[data-theme="dark"] .border-slate-100,
+.dark .border-slate-100 {
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="dark"] .text-slate-900,
+.dark .text-slate-900,
+[data-theme="dark"] .text-slate-800,
+.dark .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-slate-700,
+.dark .text-slate-700,
+[data-theme="dark"] .text-slate-600,
+.dark .text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-slate-500,
+.dark .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+.dark .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+[data-theme="dark"] ::placeholder,
+.dark ::placeholder {
+  color: var(--text-muted);
+}
+
 /* Base HTML & Body Resets */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -97,6 +207,7 @@ html, body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 #root {
@@ -119,4 +230,11 @@ html, body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #26446a;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #3e6697;
 }

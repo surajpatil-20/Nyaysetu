@@ -225,6 +225,16 @@
   background-color: rgba(17, 72, 107, 0.3);
 }
 
+.app-sidebar-action-btn.active-action {
+  color: #ffffff;
+  background-color: var(--bg-sidebar-active);
+  font-weight: 600;
+}
+
+.app-sidebar-action-btn.active-action svg {
+  color: var(--accent-gold);
+}
+
 .app-sidebar-action-btn.logout-btn:hover {
   color: #f87171;
   background-color: rgba(239, 68, 68, 0.1);

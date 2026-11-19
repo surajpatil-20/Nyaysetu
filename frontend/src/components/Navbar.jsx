@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Scale, Search, Bell, Menu, X, LogOut } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Scale, Search, Bell, Menu, X, LogOut, Sun, Moon, Settings } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -56,6 +58,27 @@ export default function Navbar() {
 
           {/* Right Action Icons & User Auth */}
           <div className="navbar-actions">
+            {/* Dark / Light Mode Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="navbar-theme-btn"
+              title={theme === 'dark' ? 'Switch to Civic Light Mode' : 'Switch to Judicial Dark Mode'}
+              aria-label="Toggle Theme Mode"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="h-3.5 w-3.5 text-[#FFA425]" />
+                  <span className="navbar-theme-label">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="h-3.5 w-3.5 text-[#38BDF8]" />
+                  <span className="navbar-theme-label">Dark</span>
+                </>
+              )}
+            </button>
+
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <button
@@ -121,6 +144,13 @@ export default function Navbar() {
                       >
                         Profile Settings
                       </Link>
+                      <Link
+                        to="/settings"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="navbar-dropdown-link"
+                      >
+                        Settings &amp; Font Size
+                      </Link>
                       {isAdmin && (
                         <Link
                           to="/admin"
@@ -181,6 +211,36 @@ export default function Navbar() {
             </Link>
           ))}
 
+          {/* Mobile Theme & Settings Row */}
+          <div className="navbar-mobile-theme-box">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="navbar-mobile-theme-btn"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="h-4 w-4 text-[#FFA425]" />
+                  <span>Switch to Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="h-4 w-4 text-[#38BDF8]" />
+                  <span>Switch to Dark Mode</span>
+                </>
+              )}
+            </button>
+            <Link
+              to="/settings"
+              onClick={() => setMobileMenuOpen(false)}
+              className="navbar-mobile-settings-btn"
+              title="Font & Accessibility Settings"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </Link>
+          </div>
+
           {isAuthenticated ? (
             <div className="border-t border-slate-800 pt-3 space-y-2">
               <Link
@@ -212,6 +272,13 @@ export default function Navbar() {
                 className="navbar-mobile-link"
               >
                 Profile Settings
+              </Link>
+              <Link
+                to="/settings"
+                onClick={() => setMobileMenuOpen(false)}
+                className="navbar-mobile-link"
+              >
+                Settings &amp; Font Size
               </Link>
               <button
                 onClick={handleLogout}

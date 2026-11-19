@@ -117,8 +117,8 @@ export default function AppLayout({ children }) {
               </Link>
 
               <Link
-                to="/profile"
-                className="app-sidebar-action-btn"
+                to="/settings"
+                className={`app-sidebar-action-btn ${location.pathname === '/settings' ? 'active-action text-white' : ''}`}
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>

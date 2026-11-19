@@ -29,10 +29,11 @@ export default function HomePage() {
   };
 
   const quickPills = [
-    "Child witness testimony in Pradeep v State of Haryana",
-    "Section 302 IPC circumstantial evidence",
-    "Anticipatory bail Section 438",
-    "Speedy trial Article 21",
+    "Motor accident third-party claims (T.J. Parameshwarappa)",
+    "Natural justice in criminal appeals (S. Narahari)",
+    "Child witness testimony (Pradeep v State of Haryana)",
+    "Tax assessment & statutory exemptions (Santhosh Maize)",
+    "Circumstantial evidence Section 302 IPC",
   ];
 
   const capabilityCards = [

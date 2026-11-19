@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchApi } from '../api/search';
+import { casesApi } from '../api/cases';
 import EvidenceCard from '../components/EvidenceCard';
 import AppLayout from '../components/AppLayout';
 import {
@@ -8,9 +9,20 @@ import {
   RotateCcw,
   SlidersHorizontal,
   AlertCircle,
-  FileSearch
+  FileSearch,
+  BookOpen,
+  Scale
 } from 'lucide-react';
 import './SearchPage.css';
+
+const QUICK_TOPICS = [
+  { label: 'All Cases', query: '' },
+  { label: 'Natural Justice', query: 'natural justice' },
+  { label: 'Motor Accident', query: 'accident' },
+  { label: 'Income Tax', query: 'income tax' },
+  { label: 'Criminal Appeals', query: 'appeal' },
+  { label: 'Child Witness', query: 'child witness testimony' },
+];
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +32,7 @@ export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isBrowseMode, setIsBrowseMode] = useState(!queryParam);
 
   // Filters matching Screen 2
   const [court, setCourt] = useState('Supreme Court of India');
@@ -30,18 +43,49 @@ export default function SearchPage() {
   const [section, setSection] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
 
+  // Load all cases when no search query is specified
+  const loadAllCases = async () => {
+    setLoading(true);
+    setError(null);
+    setIsBrowseMode(true);
+    try {
+      const data = await casesApi.getCases({ limit: 30 });
+      const rawCases = data.results || data || [];
+      const mapped = rawCases.map((c) => ({
+        case_id: c.id,
+        case_number: c.case_number,
+        case_title: c.case_title,
+        document_title: c.court_name || 'Supreme Court Judgment',
+        page_number: 1,
+        snippet: c.description || `Supreme Court decision in ${c.case_title}. Presiding forum: ${c.court_name || 'Supreme Court of India'}. Status: ${c.status || 'Disposed'}.`,
+        hybrid_score: 1.0,
+        source_url: c.source_url,
+      }));
+      setResults(mapped);
+    } catch (err) {
+      setError(err.message || 'Failed to load case precedents.');
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const performSearch = async (searchQuery) => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      loadAllCases();
+      return;
+    }
 
     setLoading(true);
     setError(null);
+    setIsBrowseMode(false);
 
     try {
       const data = await searchApi.hybridSearch({
         q: searchQuery,
         year: endYear !== '2024' || startYear !== '1950' ? endYear : undefined,
         alpha: 0.5,
-        top_k: 20,
+        top_k: 25,
       });
       setResults(data.results || []);
     } catch (err) {
@@ -56,6 +100,8 @@ export default function SearchPage() {
     if (queryParam) {
       setQuery(queryParam);
       performSearch(queryParam);
+    } else {
+      loadAllCases();
     }
   }, [queryParam]);
 
@@ -64,6 +110,20 @@ export default function SearchPage() {
     if (query.trim()) {
       setSearchParams({ q: query.trim() });
       performSearch(query.trim());
+    } else {
+      setSearchParams({});
+      loadAllCases();
+    }
+  };
+
+  const handleQuickTopic = (topicQuery) => {
+    setQuery(topicQuery);
+    if (topicQuery) {
+      setSearchParams({ q: topicQuery });
+      performSearch(topicQuery);
+    } else {
+      setSearchParams({});
+      loadAllCases();
     }
   };
 
@@ -76,6 +136,8 @@ export default function SearchPage() {
     setSection('');
     if (query.trim()) {
       performSearch(query.trim());
+    } else {
+      loadAllCases();
     }
   };
 
@@ -113,12 +175,13 @@ export default function SearchPage() {
                   <option value="Supreme Court of India">Supreme Court of India</option>
                   <option value="High Court of Delhi">High Court of Delhi</option>
                   <option value="High Court of Bombay">High Court of Bombay</option>
+                  <option value="High Court of Rajasthan">High Court of Rajasthan</option>
                 </select>
               </div>
 
               {/* Year Range */}
               <div className="search-filter-group">
-                <label className="search-filter-label">Year</label>
+                <label className="search-filter-label">Year Range</label>
                 <div className="search-filter-year-grid">
                   <input
                     type="number"
@@ -143,48 +206,55 @@ export default function SearchPage() {
 
               {/* Judge */}
               <div className="search-filter-group">
-                <label className="search-filter-label">Judge</label>
+                <label className="search-filter-label">Presiding Judge</label>
                 <select
                   value={judge}
                   onChange={(e) => setJudge(e.target.value)}
                   className="search-filter-select"
                 >
-                  <option value="">Select Judge</option>
+                  <option value="">All Judges (78 Coram)</option>
                   <option value="A.S. Bopanna">Justice A.S. Bopanna</option>
+                  <option value="Abhay S. Oka">Justice Abhay S. Oka</option>
                   <option value="Prashant Kumar Mishra">Justice Prashant Kumar Mishra</option>
                   <option value="D.Y. Chandrachud">Chief Justice D.Y. Chandrachud</option>
+                  <option value="Priya Sharma">Justice Priya Sharma</option>
+                  <option value="Arun Kumar">Justice Arun Kumar</option>
                 </select>
               </div>
 
               {/* Act */}
               <div className="search-filter-group">
-                <label className="search-filter-label">Act</label>
+                <label className="search-filter-label">Enactment / Act</label>
                 <select
                   value={act}
                   onChange={(e) => setAct(e.target.value)}
                   className="search-filter-select"
                 >
-                  <option value="">Select Act</option>
+                  <option value="">All Statutes</option>
                   <option value="Indian Penal Code, 1860">Indian Penal Code, 1860</option>
                   <option value="Code of Criminal Procedure, 1973">Code of Criminal Procedure, 1973</option>
                   <option value="Constitution of India">Constitution of India</option>
                   <option value="Indian Evidence Act, 1872">Indian Evidence Act, 1872</option>
+                  <option value="Income Tax Act, 1961">Income Tax Act, 1961</option>
+                  <option value="Motor Vehicles Act, 1988">Motor Vehicles Act, 1988</option>
                 </select>
               </div>
 
               {/* Section */}
               <div className="search-filter-group">
-                <label className="search-filter-label">Section</label>
+                <label className="search-filter-label">Section / Article</label>
                 <select
                   value={section}
                   onChange={(e) => setSection(e.target.value)}
                   className="search-filter-select"
                 >
-                  <option value="">Select Section</option>
-                  <option value="Section 302">Section 302</option>
-                  <option value="Section 34">Section 34</option>
-                  <option value="Section 438">Section 438</option>
-                  <option value="Article 21">Article 21</option>
+                  <option value="">All Sections</option>
+                  <option value="Section 302">Section 302 IPC (Murder)</option>
+                  <option value="Section 34">Section 34 IPC (Common Intention)</option>
+                  <option value="Section 438">Section 438 CrPC (Anticipatory Bail)</option>
+                  <option value="Article 21">Article 21 (Life & Liberty)</option>
+                  <option value="Section 118">Section 118 Evidence Act</option>
+                  <option value="Section 166">Section 166 Motor Vehicles Act</option>
                 </select>
               </div>
 
@@ -208,29 +278,56 @@ export default function SearchPage() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="child witness testimony in Pradeep v State of Haryana"
+                  placeholder="Search across 105 precedents (e.g. tax, accident, appeal, natural justice, bail)..."
                   className="search-bar-input"
                 />
                 <button
                   type="submit"
                   disabled={loading}
                   className="search-bar-submit"
-                  title="Search"
+                  title="Execute Hybrid Search"
                 >
                   <Search className="h-5 w-5" />
                 </button>
               </div>
             </form>
 
+            {/* Quick Topic Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.75rem' }}>
+              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Explore Topics:</span>
+              {QUICK_TOPICS.map((topic, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handleQuickTopic(topic.query)}
+                  style={{
+                    padding: '0.25rem 0.625rem',
+                    borderRadius: 'var(--radius-full)',
+                    border: '1px solid var(--border-subtle)',
+                    backgroundColor: query === topic.query ? 'var(--primary-navy)' : '#ffffff',
+                    color: query === topic.query ? '#ffffff' : 'var(--text-secondary)',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontSize: '0.6875rem',
+                    transition: 'all var(--transition-fast)'
+                  }}
+                >
+                  {topic.label}
+                </button>
+              ))}
+            </div>
+
             {/* Results Header */}
             <div className="search-results-header">
               <div>
-                <h2 className="search-results-title">Search Results</h2>
-                {query && (
-                  <p className="search-results-count">
-                    Found {results.length} results for &ldquo;<strong>{query}</strong>&rdquo;
-                  </p>
-                )}
+                <h2 className="search-results-title">
+                  {isBrowseMode ? 'Indexed Precedent Cases' : 'Search Results'}
+                </h2>
+                <p className="search-results-count">
+                  {isBrowseMode
+                    ? `Displaying ${results.length} Supreme Court case records from 105 indexed precedents`
+                    : `Found ${results.length} result${results.length === 1 ? '' : 's'} for "${query}"`}
+                </p>
               </div>
 
               <div className="search-sort-group">
@@ -241,8 +338,8 @@ export default function SearchPage() {
                   className="search-sort-select"
                 >
                   <option value="relevance">Relevance</option>
-                  <option value="score">Score (High to Low)</option>
                   <option value="date">Date (Newest)</option>
+                  <option value="case_number">Case Number</option>
                 </select>
               </div>
             </div>
@@ -259,7 +356,9 @@ export default function SearchPage() {
             {loading && (
               <div className="search-loading-box">
                 <div className="search-spinner"></div>
-                <p className="search-loading-text">Retrieving vector embeddings from PostgreSQL pgvector...</p>
+                <p className="search-loading-text">
+                  {query ? 'Retrieving vector embeddings from PostgreSQL pgvector...' : 'Loading indexed case records...'}
+                </p>
               </div>
             )}
 
@@ -278,18 +377,7 @@ export default function SearchPage() {
                 <FileSearch className="search-empty-icon" />
                 <h3 className="search-empty-title">No Matching Case Records</h3>
                 <p className="search-empty-desc">
-                  No Supreme Court judgments closely matched your semantic query. Try broadening your keywords or resetting filters.
-                </p>
-              </div>
-            )}
-
-            {/* Initial State */}
-            {!loading && !query && (
-              <div className="search-empty-card">
-                <Search className="search-empty-icon text-blue-500" />
-                <h3 className="search-empty-title">Begin Your Legal Research</h3>
-                <p className="search-empty-desc">
-                  Type legal concepts or case names above to perform hybrid BM25 and pgvector cosine similarity search across 2,058 indexed document chunks.
+                  No Supreme Court judgments closely matched &ldquo;{query}&rdquo;. Try broader terms like &ldquo;appeal&rdquo;, &ldquo;tax&rdquo;, &ldquo;accident&rdquo;, or click &ldquo;All Cases&rdquo; above.
                 </p>
               </div>
             )}
