@@ -15,7 +15,8 @@ import {
   LogOut,
   Briefcase,
   Menu,
-  X
+  X,
+  BookOpen
 } from 'lucide-react';
 import './AppLayout.css';
 
@@ -42,6 +43,7 @@ export default function AppLayout({ children }) {
     { name: 'Cases', path: '/cases', icon: Briefcase, matchExact: false },
     { name: 'Knowledge Graph', path: '/graph', icon: Network, matchSubpaths: ['/graph', '/cases/'] },
     { name: 'Documents', path: '/documents', icon: Folder },
+    { name: 'Know Your Law', path: '/know-your-law', icon: BookOpen, matchSubpaths: ['/know-your-law'] },
     { name: 'Judicial Services', path: '/services', icon: Building2 },
   ];
 
@@ -62,6 +64,7 @@ export default function AppLayout({ children }) {
     if (location.pathname.includes('/graph')) return 'Knowledge Graph';
     if (location.pathname.startsWith('/cases')) return 'Case Dossier';
     if (location.pathname.startsWith('/documents')) return 'Document Vault';
+    if (location.pathname.startsWith('/know-your-law')) return 'Know Your Law';
     if (location.pathname === '/services') return 'Judicial Services';
     if (location.pathname === '/settings') return 'Settings';
     if (location.pathname === '/profile') return 'Profile';

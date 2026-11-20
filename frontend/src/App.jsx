@@ -19,6 +19,8 @@ import AssistantPage from './pages/AssistantPage';
 import DocumentsPage from './pages/DocumentsPage';
 import DocumentDetailPage from './pages/DocumentDetailPage';
 import ServicesPage from './pages/ServicesPage';
+import KnowYourLawPage from './pages/KnowYourLawPage';
+import ScenarioDetailPage from './pages/ScenarioDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
@@ -44,6 +46,8 @@ export default function App() {
                 <Route path="/cases/:id/graph" element={<GraphPage />} />
                 <Route path="/graph" element={<Navigate to="/cases/1/graph" replace />} />
                 <Route path="/services" element={<ServicesPage />} />
+                <Route path="/know-your-law" element={<KnowYourLawPage />} />
+                <Route path="/know-your-law/:id" element={<ScenarioDetailPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
 
                 {/* Protected AI Assistant Route (Requires Citizen Authentication) */}

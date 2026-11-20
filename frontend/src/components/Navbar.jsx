@@ -22,6 +22,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Search', path: '/search' },
+    { name: 'Know Your Law', path: '/know-your-law' },
     ...(isAuthenticated ? [{ name: 'Assistant', path: '/assistant' }] : []),
     { name: 'Services', path: '/services' },
   ];

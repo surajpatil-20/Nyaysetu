@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "apps.data_ingestion",
     "apps.assistant",
     "apps.graph",
+    "apps.laws",
 ]
 
 MIDDLEWARE = [
