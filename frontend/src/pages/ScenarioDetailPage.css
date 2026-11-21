@@ -538,6 +538,181 @@
 .sd-skeleton-line.title { width: 70%; height: 1.5rem; }
 .sd-skeleton-line.text { width: 90%; }
 
+/* ==========================================================================
+   7. Related Precedent Cases Grid
+   ========================================================================== */
+.sd-related-cases-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sd-cases-count-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  background-color: rgba(17, 72, 107, 0.08);
+  color: var(--primary-navy);
+  border: 1px solid rgba(17, 72, 107, 0.15);
+}
+
+[data-theme="dark"] .sd-cases-count-badge {
+  background-color: rgba(255, 164, 37, 0.12);
+  color: #FFA425;
+  border-color: rgba(255, 164, 37, 0.25);
+}
+
+.sd-cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.sd-case-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.sd-case-card:hover {
+  border-color: rgba(17, 72, 107, 0.35);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .sd-case-card:hover {
+  border-color: rgba(255, 164, 37, 0.4);
+}
+
+.sd-case-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.sd-case-meta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sd-case-docket {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background-color: rgba(17, 72, 107, 0.08);
+  color: var(--primary-navy);
+  letter-spacing: 0.02em;
+}
+
+[data-theme="dark"] .sd-case-docket {
+  background-color: rgba(255, 164, 37, 0.12);
+  color: #FFA425;
+}
+
+.sd-case-date {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.sd-case-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.sd-case-title-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.sd-case-title-link:hover {
+  color: var(--primary-navy);
+  text-decoration: underline;
+}
+
+[data-theme="dark"] .sd-case-title-link:hover {
+  color: #FFA425;
+}
+
+.sd-case-snippet {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sd-case-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.875rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sd-case-court {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sd-case-btn-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: white;
+  background-color: var(--primary-navy);
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.sd-case-btn-view:hover {
+  background-color: #0c3550;
+  transform: translateX(1px);
+}
+
+[data-theme="dark"] .sd-case-btn-view {
+  background-color: #FFA425;
+  color: #0A2540;
+}
+
+[data-theme="dark"] .sd-case-btn-view:hover {
+  background-color: #ffb547;
+}
+
+.sd-empty-cases {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background-color: var(--bg-surface);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
 /* Mobile Adjustments (< 640px) */
 @media (max-width: 640px) {
   .sd-page-container {
@@ -561,5 +736,8 @@
   }
   .sd-law-card {
     padding: 1.125rem 1rem;
+  }
+  .sd-cases-grid {
+    grid-template-columns: 1fr;
   }
 }

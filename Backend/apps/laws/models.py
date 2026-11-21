@@ -76,6 +76,12 @@ class LegalScenario(models.Model):
     situation_summary = models.TextField(help_text="Detailed scenario description of what happens in daily life")
     what_to_do = models.TextField(help_text="Actionable, step-by-step guidance on how the citizen should handle the situation")
     sections = models.ManyToManyField(LawSection, related_name='scenarios', blank=True, help_text="Relevant statutory provisions")
+    related_cases = models.ManyToManyField(
+        'cases.Case',
+        related_name='scenarios',
+        blank=True,
+        help_text="Authentic Supreme Court precedent cases linked to this scenario"
+    )
     official_portal_url = models.URLField(max_length=500, blank=True, null=True, help_text="Direct link to government grievance, e-filing or tribunal portal")
     helpline_number = models.CharField(max_length=100, blank=True, null=True, help_text="Official citizen helpline (e.g. 1915, 1930, 181)")
     is_featured = models.BooleanField(default=False, help_text="Feature this scenario on homepage or highlights")

@@ -100,6 +100,7 @@ function FormattedJudicialText({ content, onCitationClick }) {
 
 export default function AssistantPage() {
   const [query, setQuery] = useState('');
+  const [activeCaseId, setActiveCaseId] = useState(null);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -133,9 +134,14 @@ export default function AssistantPage() {
     try {
       const response = await assistantApi.askAssistant({
         query: promptToSend,
+        case_id: activeCaseId,
         top_k: 5,
         alpha: 0.5,
       });
+
+      if (response.identified_case?.id) {
+        setActiveCaseId(response.identified_case.id);
+      }
 
       const rawEvidence = response.sources || response.evidence || [];
       const assistantMessage = {
@@ -146,6 +152,9 @@ export default function AssistantPage() {
         evidence: rawEvidence,
         evidenceCount: rawEvidence.length || 0,
         showEvidence: true,
+        identifiedCase: response.identified_case,
+        needsClarification: response.needs_clarification,
+        candidateCases: response.candidate_cases,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -230,7 +239,70 @@ export default function AssistantPage() {
 
                 <div className="assistant-ai-content-box">
                   <div className="assistant-ai-msg-card">
+                    {/* Targeted Case Banner */}
+                    {msg.identifiedCase && (
+                      <div className="assistant-target-case-banner">
+                        <div className="assistant-target-case-header">
+                          <Scale className="h-3.5 w-3.5 text-[#FFA425] shrink-0" />
+                          <span className="assistant-target-case-tag">Targeted Precedent Record</span>
+                        </div>
+                        <div className="assistant-target-case-body">
+                          <Link
+                            to={`/cases/${msg.identifiedCase.id}`}
+                            className="assistant-target-case-link"
+                            title="Open verified case dossier"
+                          >
+                            <span className="font-semibold">{msg.identifiedCase.case_title}</span>
+                            <span className="assistant-target-case-citation">({msg.identifiedCase.case_number})</span>
+                            <ArrowRight className="h-3.5 w-3.5 text-[#FFA425] shrink-0 ml-1 inline" />
+                          </Link>
+                          <div className="assistant-target-case-meta">
+                            {msg.identifiedCase.court_name && (
+                              <span>{msg.identifiedCase.court_name}</span>
+                            )}
+                            {msg.identifiedCase.decision_date && (
+                              <span>• Decided: {msg.identifiedCase.decision_date}</span>
+                            )}
+                            {msg.identifiedCase.bench && (
+                              <span>• Bench: {msg.identifiedCase.bench}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <FormattedJudicialText content={msg.content} />
+
+                    {/* Clarification Chips if multiple cases are plausible */}
+                    {msg.needsClarification && msg.candidateCases && msg.candidateCases.length > 0 && (
+                      <div className="assistant-clarification-panel">
+                        <div className="assistant-clarification-header">
+                          <Scale className="h-3.5 w-3.5 text-[#FFA425]" />
+                          <span>Select a specific precedent to research:</span>
+                        </div>
+                        <div className="assistant-clarification-chips">
+                          {msg.candidateCases.map((cand) => (
+                            <button
+                              key={cand.id}
+                              type="button"
+                              disabled={loading}
+                              onClick={() => {
+                                setActiveCaseId(cand.id);
+                                handleSend(`Tell me about ${cand.case_title} (${cand.case_number})`);
+                              }}
+                              className="assistant-clarification-chip"
+                            >
+                              <span className="assistant-clarification-chip-title truncate">
+                                {cand.case_title}
+                              </span>
+                              <span className="assistant-clarification-chip-number">
+                                {cand.case_number}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Insufficient Evidence Safeguard */}
                     {msg.hasSufficientEvidence === false && (

@@ -2,10 +2,11 @@
 NYAYASETU Assistant Service
 
 Orchestrates evidence retrieval and grounded synthesis:
-  1. Retrieve relevant evidence chunks via Hybrid Search.
-  2. Verify evidence sufficiency.
-  3. Synthesize response through LLM provider.
-  4. Attach verifiable source citations and mandatory disclaimer.
+  1. Identify targeted Supreme Court case (citations, parties, coram, context).
+  2. Retrieve relevant evidence chunks via case-aware Hybrid Search.
+  3. Verify evidence sufficiency.
+  4. Synthesize response through LLM provider.
+  5. Attach verifiable source citations, identified precedent metadata, and mandatory disclaimer.
 """
 import logging
 from typing import Optional
@@ -18,6 +19,7 @@ from apps.assistant.prompts import (
     build_rag_prompt,
 )
 from apps.assistant.llm import get_llm_provider
+from apps.assistant.case_identifier import resolve_case_reference
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,7 @@ class AssistantService:
     @staticmethod
     def answer_question(
         query: str,
+        case_id: Optional[int] = None,
         filters: Optional[dict] = None,
         top_k: int = 5,
         alpha: float = 0.5,
@@ -38,6 +41,7 @@ class AssistantService:
 
         Args:
             query: Citizen natural language question.
+            case_id: Optional ID of active case for conversational continuity.
             filters: Optional search filters (court_id, case_type, year, document_type).
             top_k: Number of evidence chunks to retrieve for context.
             alpha: Search balance (0.5 = equal keyword and semantic weights).
@@ -50,6 +54,9 @@ class AssistantService:
                 "evidence_count": int,
                 "sources": list[dict],
                 "disclaimer": str,
+                "identified_case": Optional[dict],
+                "needs_clarification": bool,
+                "candidate_cases": list[dict],
             }
         """
         query_clean = query.strip()
@@ -61,13 +68,52 @@ class AssistantService:
                 "evidence_count": 0,
                 "sources": [],
                 "disclaimer": DISCLAIMER_TEXT,
+                "identified_case": None,
+                "needs_clarification": False,
+                "candidate_cases": [],
             }
+
+        # Step 0: Case Identification
+        resolution = resolve_case_reference(query=query_clean, context_case_id=case_id)
+
+        # Handle ambiguous case references (e.g. "Tell me about Union of India")
+        if resolution.status == "AMBIGUOUS":
+            candidate_list = []
+            for c in resolution.candidate_cases:
+                judges = [cj.judge.name for cj in c.case_judges.all()]
+                candidate_list.append({
+                    "id": c.id,
+                    "case_number": c.case_number,
+                    "case_title": c.case_title,
+                    "decision_date": str(c.decision_date) if c.decision_date else None,
+                    "court_name": c.court.court_name if c.court else "Supreme Court of India",
+                    "bench": ", ".join(judges) if judges else "",
+                    "relevance_reason": getattr(c, "relevance_reason", ""),
+                })
+
+            return {
+                "query": query_clean,
+                "answer": resolution.clarification_message,
+                "has_sufficient_evidence": True,
+                "evidence_count": 0,
+                "sources": [],
+                "disclaimer": DISCLAIMER_TEXT,
+                "identified_case": None,
+                "needs_clarification": True,
+                "candidate_cases": candidate_list,
+            }
+
+        target_case = resolution.identified_case if resolution.status == "IDENTIFIED" else None
+        search_filters = dict(filters or {})
+
+        if target_case:
+            search_filters["case_id"] = target_case.id
 
         # Step 1: Evidence Retrieval via Hybrid Search
         try:
             evidence_results: list[EvidenceResult] = hybrid_search(
                 query=query_clean,
-                filters=filters or {},
+                filters=search_filters,
                 top_k=top_k,
                 alpha=alpha,
             )
@@ -75,11 +121,53 @@ class AssistantService:
             logger.exception("Hybrid search error during assistant processing: %s", exc)
             evidence_results = []
 
+        # If a specific case is targeted, ensure the opening / headnote chunk (chunk_index=0) is available
+        # so coram, date, appeal number, and headnote ratio are always grounded in official record
+        if target_case:
+            try:
+                from apps.documents.models import DocumentChunk
+                chunk0 = DocumentChunk.objects.filter(document__case=target_case, chunk_index=0).first()
+                if chunk0 and not any(ev.chunk_id == chunk0.pk for ev in evidence_results):
+                    doc = chunk0.document
+                    headnote_ev = EvidenceResult(
+                        chunk_id=chunk0.pk,
+                        case_id=target_case.pk,
+                        case_number=target_case.case_number,
+                        case_title=target_case.case_title,
+                        document_id=doc.pk,
+                        document_title=doc.title,
+                        document_type=doc.document_type,
+                        page_number=chunk0.page_number,
+                        snippet=chunk0.content[:300].strip(),
+                        keyword_score=1.0,
+                        semantic_score=1.0,
+                        hybrid_score=1.0,
+                        source_name=doc.source_name or target_case.source_name,
+                        source_url=doc.source_url or target_case.source_url,
+                        full_content=chunk0.content or "",
+                    )
+                    evidence_results.insert(0, headnote_ev)
+            except Exception as exc:
+                logger.warning("Could not append chunk0 for identified case: %s", exc)
+
         # Filter out results with negligible relevance score
         valid_evidence = [
             ev for ev in evidence_results
             if ev.hybrid_score >= MIN_EVIDENCE_SCORE_THRESHOLD
         ]
+
+        identified_case_data = None
+        if target_case:
+            judges_list = [cj.judge.name for cj in target_case.case_judges.all()]
+            identified_case_data = {
+                "id": target_case.id,
+                "case_number": target_case.case_number,
+                "case_title": target_case.case_title,
+                "decision_date": str(target_case.decision_date) if target_case.decision_date else None,
+                "court_name": target_case.court.court_name if target_case.court else "Supreme Court of India",
+                "bench": ", ".join(judges_list) if judges_list else "",
+                "relevance_reason": resolution.match_reason,
+            }
 
         # Step 2: Check Evidence Sufficiency
         if not valid_evidence:
@@ -91,6 +179,9 @@ class AssistantService:
                 "evidence_count": 0,
                 "sources": [],
                 "disclaimer": DISCLAIMER_TEXT,
+                "identified_case": identified_case_data,
+                "needs_clarification": False,
+                "candidate_cases": [],
             }
 
         # Step 2.5: Enrich evidence with Case / Court / Bench metadata
@@ -124,7 +215,6 @@ class AssistantService:
             answer = llm.generate(system_prompt=SYSTEM_PROMPT, user_prompt=rag_prompt)
         except Exception as exc:
             logger.exception("LLM generation failed for query '%s': %s", query_clean, exc)
-            # Safe fallback if LLM service errors
             answer = (
                 f"We retrieved relevant judicial records, but the AI synthesis service is temporarily "
                 f"unavailable. Please review the cited source documents below directly.\n\n"
@@ -160,5 +250,7 @@ class AssistantService:
             "evidence_count": len(sources),
             "sources": sources,
             "disclaimer": DISCLAIMER_TEXT,
+            "identified_case": identified_case_data,
+            "needs_clarification": False,
+            "candidate_cases": [],
         }
-

@@ -67,6 +67,7 @@ class AssistantChatView(APIView):
 
         response_data = AssistantService.answer_question(
             query=data["query"],
+            case_id=data.get("case_id"),
             filters=filters,
             top_k=data.get("top_k", 5),
             alpha=data.get("alpha", 0.5),

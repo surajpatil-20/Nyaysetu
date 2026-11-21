@@ -220,11 +220,22 @@ class MockLLMProvider(BaseLLMProvider):
         if not holding_sentence and scored_sentences:
             holding_sentence = (scored_sentences[0][1], scored_sentences[0][2], scored_sentences[0][3])
 
+        is_judge_query = any(w in query.lower() for w in ["judge", "judges", "bench", "coram", "presiding"])
+
         response_sections = []
 
         # SECTION 1: Executive Judicial Holding
         response_sections.append("### Executive Judicial Holding")
-        if holding_sentence:
+        if is_judge_query:
+            bench_str = f"**{p_bench}**" if p_bench else "the Hon'ble Bench of the Supreme Court"
+            response_sections.append(
+                f"In **{p_title}{p_num}** [Evidence 1], the adjudicating Bench comprised {bench_str}."
+            )
+            if holding_sentence:
+                response_sections.append(
+                    f"\nThe Court held:\n\n> \"{holding_sentence[2]}\""
+                )
+        elif holding_sentence:
             idx, pg, sent = holding_sentence
             bench_str = f" (Bench of {p_bench})" if p_bench else ""
             response_sections.append(
@@ -306,11 +317,10 @@ class MockLLMProvider(BaseLLMProvider):
         if disposition_found:
             idx, disp_sent = disposition_found
             response_sections.append(f"- **Order of the Court [Evidence {idx}]**: {disp_sent}")
-        else:
-            response_sections.append(f"- **Adjudicating Court**: {p_court}")
-            if p_bench:
-                response_sections.append(f"- **Bench Coram**: {p_bench}")
-            if p_date:
-                response_sections.append(f"- **Decision Date**: {p_date}")
+        response_sections.append(f"- **Adjudicating Court**: {p_court}")
+        if p_bench:
+            response_sections.append(f"- **Bench Coram**: {p_bench}")
+        if p_date:
+            response_sections.append(f"- **Decision Date**: {p_date}")
 
         return "\n".join(response_sections)

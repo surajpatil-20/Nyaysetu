@@ -108,6 +108,8 @@ def _keyword_search(query: str, filters: dict, limit: int = 50) -> list:
     )
 
     # Apply optional filters
+    if filters.get("case_id"):
+        qs = qs.filter(document__case_id=filters["case_id"])
     if filters.get("court_id"):
         qs = qs.filter(document__case__court_id=filters["court_id"])
     if filters.get("case_type"):
@@ -162,6 +164,8 @@ def _semantic_vector_search(query_vector: list[float], filters: dict, top_k: int
     )
 
     # Apply optional filters
+    if filters.get("case_id"):
+        qs = qs.filter(document__case_id=filters["case_id"])
     if filters.get("court_id"):
         qs = qs.filter(document__case__court_id=filters["court_id"])
     if filters.get("case_type"):
@@ -181,8 +185,10 @@ def _semantic_vector_search(query_vector: list[float], filters: dict, top_k: int
     for chunk in qs:
         # Distance is in [0, 2]. Distance <= 0 means identical; 1 means orthogonal.
         # Chunks with cosine distance > 0.38 have low semantic correlation and are discarded.
+        # When filtered to a specific case_id, allow broader distance threshold (0.65).
+        max_dist = 0.65 if filters.get("case_id") else 0.38
         dist = float(chunk.distance) if chunk.distance is not None else 1.0
-        if dist > 0.38:
+        if dist > max_dist:
             continue
         similarity = max(0.0, 1.0 - dist)
         results.append((chunk, similarity))

@@ -537,6 +537,131 @@
 }
 
 /* ==========================================================================
+   Targeted Case Precedent Banner & Clarification Chips
+   ========================================================================== */
+.assistant-target-case-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.875rem;
+  background-color: #fffbeb;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-left: 3px solid #f59e0b;
+  border-radius: var(--radius-md);
+}
+
+.assistant-target-case-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.assistant-target-case-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #b45309;
+}
+
+.assistant-target-case-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.assistant-target-case-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.assistant-target-case-link:hover {
+  color: #d97706;
+  text-decoration: underline;
+}
+
+.assistant-target-case-citation {
+  font-size: 0.8125rem;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.assistant-target-case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.assistant-clarification-panel {
+  margin-top: 1rem;
+  padding: 0.75rem 0.875rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.assistant-clarification-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assistant-clarification-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.assistant-clarification-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.assistant-clarification-chip:hover {
+  border-color: #f59e0b;
+  background-color: #fffdf5;
+  box-shadow: var(--shadow-xs);
+}
+
+.assistant-clarification-chip-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assistant-clarification-chip-number {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #b45309;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
    AssistantPage Mobile Responsiveness (< 640px)
    ========================================================================== */
 @media (max-width: 640px) {

@@ -20,11 +20,26 @@ class SourceCitationSerializer(serializers.Serializer):
     source_url = serializers.CharField(allow_null=True)
 
 
+class IdentifiedCaseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    case_number = serializers.CharField()
+    case_title = serializers.CharField()
+    decision_date = serializers.CharField(allow_null=True, required=False)
+    court_name = serializers.CharField(allow_null=True, required=False)
+    bench = serializers.CharField(allow_null=True, required=False, allow_blank=True)
+    relevance_reason = serializers.CharField(allow_null=True, required=False, allow_blank=True)
+
+
 class AssistantQuerySerializer(serializers.Serializer):
     query = serializers.CharField(
         max_length=1000,
         required=True,
         help_text="User legal question or topic to research"
+    )
+    case_id = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        help_text="Optional ID of active case for conversational continuity"
     )
     court_id = serializers.IntegerField(
         required=False,
@@ -69,4 +84,7 @@ class AssistantResponseSerializer(serializers.Serializer):
     evidence_count = serializers.IntegerField()
     sources = SourceCitationSerializer(many=True)
     disclaimer = serializers.CharField()
+    identified_case = IdentifiedCaseSerializer(allow_null=True, required=False)
+    needs_clarification = serializers.BooleanField(default=False)
+    candidate_cases = IdentifiedCaseSerializer(many=True, required=False)
 

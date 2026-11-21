@@ -95,9 +95,27 @@ class LegalScenarioListSerializer(serializers.ModelSerializer):
         return tags[:4]
 
 
+class ScenarioRelatedCaseSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    case_number = serializers.CharField(read_only=True)
+    case_title = serializers.CharField(read_only=True)
+    case_type = serializers.CharField(read_only=True)
+    court_name = serializers.CharField(source='court.court_name', default='Supreme Court of India', read_only=True)
+    decision_date = serializers.DateField(read_only=True)
+    status = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    relevance_snippet = serializers.SerializerMethodField()
+
+    def get_relevance_snippet(self, obj):
+        if hasattr(obj, 'relevance_snippet') and obj.relevance_snippet:
+            return obj.relevance_snippet
+        return obj.description or 'Authentic Supreme Court judicial precedent.'
+
+
 class LegalScenarioDetailSerializer(serializers.ModelSerializer):
     category = LawCategorySerializer(read_only=True)
     sections = LawSectionSerializer(many=True, read_only=True)
+    related_cases = serializers.SerializerMethodField()
 
     class Meta:
         model = LegalScenario
@@ -113,6 +131,12 @@ class LegalScenarioDetailSerializer(serializers.ModelSerializer):
             'is_featured',
             'display_order',
             'sections',
+            'related_cases',
             'created_at',
             'updated_at',
         ]
+
+    def get_related_cases(self, obj):
+        from .services import get_scenario_related_cases
+        cases = get_scenario_related_cases(obj)
+        return ScenarioRelatedCaseSerializer(cases, many=True).data

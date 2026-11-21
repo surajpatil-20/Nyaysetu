@@ -182,3 +182,52 @@ class AssistantAPITest(TestCase):
         self.assertEqual(resp.status_code, 400)
         self.assertIn("query", resp.json())
 
+    def test_case_identification_via_api(self):
+        self.client.force_authenticate(user=self.user)
+        payload = {
+            "query": "Tell me about Ramesh Kumar v. Union of India",
+            "top_k": 3,
+        }
+        resp = self.client.post("/api/assistant/", payload, format="json")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIsNotNone(data["identified_case"])
+        self.assertEqual(data["identified_case"]["id"], self.case.id)
+        self.assertFalse(data["needs_clarification"])
+
+    def test_contextual_continuity_via_api(self):
+        self.client.force_authenticate(user=self.user)
+        payload = {
+            "query": "what happened in this case?",
+            "case_id": self.case.id,
+            "top_k": 3,
+        }
+        resp = self.client.post("/api/assistant/", payload, format="json")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIsNotNone(data["identified_case"])
+        self.assertEqual(data["identified_case"]["id"], self.case.id)
+
+
+class CaseIdentificationUnitTest(TestCase):
+    def setUp(self):
+        self.court, self.case, self.doc, self.chunk = create_assistant_test_data()
+
+    def test_identify_case_by_caption(self):
+        resp = AssistantService.answer_question("Tell me about Ramesh Kumar v. Union of India")
+        self.assertIsNotNone(resp.get("identified_case"))
+        self.assertEqual(resp["identified_case"]["id"], self.case.id)
+        self.assertFalse(resp["needs_clarification"])
+
+    def test_contextual_questions_use_active_case(self):
+        resp = AssistantService.answer_question("who were the judges in this case?", case_id=self.case.id)
+        self.assertIsNotNone(resp.get("identified_case"))
+        self.assertEqual(resp["identified_case"]["id"], self.case.id)
+
+    def test_general_question_falls_back_to_general_rag(self):
+        resp = AssistantService.answer_question("equality before law Article 14")
+        self.assertIsNone(resp.get("identified_case"))
+        self.assertFalse(resp["needs_clarification"])
+        self.assertTrue(resp["has_sufficient_evidence"])
+
+

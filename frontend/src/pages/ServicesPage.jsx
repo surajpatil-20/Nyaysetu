@@ -86,7 +86,7 @@ const DEFAULT_SERVICES = [
     description:
       'e-Daakhil is the official portal for filing consumer complaints online before District Consumer Disputes Redressal Commissions (DDRCs), State Consumer Disputes Redressal Commissions (SDRCs), and the National Consumer Disputes Redressal Commission (NCDRC).',
     eligibility: 'Any consumer aggrieved by deficiency of goods or services.',
-    official_url: 'https://edaakhil.nic.in/',
+    official_url: 'https://e-jagriti.gov.in/',
   },
   {
     id: 6,
@@ -138,15 +138,15 @@ const DEFAULT_SERVICES = [
   },
   {
     id: 10,
-    service_name: 'Supreme Court of India – Judgment Search (JUDIS)',
+    service_name: 'Supreme Court of India – Judgment Search (e-SCR)',
     category: 'CASE_STATUS',
     category_display: 'eCourts Case Status & Cause List',
     department: 'Supreme Court of India',
     state: null,
     description:
-      'JUDIS (Judgment Information System) is the official repository of Supreme Court of India judgments from 1950 onwards, with comprehensive full-text search.',
+      'e-SCR (Electronic Supreme Court Reports) and the eCourts Judgment Search portal provide free access to full-text judgments and orders of the Supreme Court of India with digital neutral citation search.',
     eligibility: 'Open to all. No registration required.',
-    official_url: 'https://judis.nic.in/',
+    official_url: 'https://judgments.ecourts.gov.in/',
   },
 ];
 
@@ -271,7 +271,7 @@ export default function ServicesPage() {
     if (cnrPortal === 'njdg') {
       targetUrl = 'https://njdg.ecourts.gov.in/';
     } else if (cnrPortal === 'sci') {
-      targetUrl = 'https://main.sci.gov.in/case-status';
+      targetUrl = 'https://www.sci.gov.in/case-status/';
     }
 
     // Open portal in new tab

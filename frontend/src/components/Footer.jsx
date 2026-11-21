@@ -45,7 +45,7 @@ export default function Footer() {
             <h4>Official Portals</h4>
 
             <a
-              href="https://main.sci.gov.in/"
+              href="https://www.sci.gov.in/"
               target="_blank"
               rel="noopener noreferrer"
             >

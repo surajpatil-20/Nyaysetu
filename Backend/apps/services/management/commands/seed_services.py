@@ -72,7 +72,7 @@ SERVICES_DATA = [
             "and the National Consumer Disputes Redressal Commission (NCDRC)."
         ),
         "eligibility": "Any consumer aggrieved by deficiency of goods or services.",
-        "official_url": "https://edaakhil.nic.in/",
+        "official_url": "https://e-jagriti.gov.in/",
     },
     {
         "service_name": "Virtual Courts – Traffic Challan & Petty Offences",
@@ -123,16 +123,16 @@ SERVICES_DATA = [
         "official_url": "https://njdg.ecourts.gov.in/",
     },
     {
-        "service_name": "Supreme Court of India – Judgment Search (JUDIS)",
+        "service_name": "Supreme Court of India – Judgment Search (e-SCR)",
         "category": "CASE_STATUS",
         "department": "Supreme Court of India",
         "state": None,
         "description": (
-            "JUDIS (Judgment Information System) is the official repository of Supreme Court of India judgments "
-            "from 1950 onwards."
+            "e-SCR (Electronic Supreme Court Reports) and the eCourts Judgment Search portal provide free "
+            "access to full-text judgments and orders of the Supreme Court of India with digital neutral citation search."
         ),
         "eligibility": "Open to all. No registration required.",
-        "official_url": "https://judis.nic.in/",
+        "official_url": "https://judgments.ecourts.gov.in/",
     },
 ]
 

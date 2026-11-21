@@ -17,7 +17,8 @@ import {
   HelpCircle,
   ShieldCheck,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import './ScenarioDetailPage.css';
 
@@ -311,6 +312,69 @@ export default function ScenarioDetailPage() {
               </div>
             )}
           </div>
+        </section>
+
+        {/* Relevant Precedent Cases from Supreme Court of India */}
+        <section className="sd-related-cases-wrap" aria-labelledby="cases-heading">
+          <div className="sd-section-header">
+            <Scale className="h-5 w-5 text-[#11486B]" />
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 id="cases-heading" className="sd-section-title">
+                  Related Precedent Judgments
+                </h2>
+                {scenario.related_cases && scenario.related_cases.length > 0 && (
+                  <span className="sd-cases-count-badge">
+                    {scenario.related_cases.length} Precedent{scenario.related_cases.length > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+              <p className="sd-section-subtitle">
+                Authoritative Supreme Court of India decisions interpreting the relevant statutory provisions, rights, and remedies involved in this situation.
+              </p>
+            </div>
+          </div>
+
+          {scenario.related_cases && scenario.related_cases.length > 0 ? (
+            <div className="sd-cases-grid">
+              {scenario.related_cases.map((rc) => (
+                <article key={rc.id} className="sd-case-card" aria-labelledby={`case-title-${rc.id}`}>
+                  <div className="sd-case-top">
+                    <div className="sd-case-meta-top">
+                      <span className="sd-case-docket">
+                        {rc.case_number || 'Supreme Court Record'}
+                      </span>
+                      {rc.decision_date && (
+                        <span className="sd-case-date">{rc.decision_date}</span>
+                      )}
+                    </div>
+                    <h3 id={`case-title-${rc.id}`} className="sd-case-title">
+                      <Link to={`/cases/${rc.id}`} className="sd-case-title-link">
+                        {rc.case_title || 'Supreme Court Judgment'}
+                      </Link>
+                    </h3>
+                    <p className="sd-case-snippet">
+                      {rc.relevance_snippet || (rc.description && rc.description.length > 200 ? `${rc.description.slice(0, 197)}...` : rc.description)}
+                    </p>
+                  </div>
+
+                  <div className="sd-case-footer">
+                    <span className="sd-case-court">
+                      {rc.court_name || 'Supreme Court of India'}
+                    </span>
+                    <Link to={`/cases/${rc.id}`} className="sd-case-btn-view">
+                      <span>View Dossier</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="sd-empty-cases">
+              <p>No Supreme Court precedent judgments directly linked to this scenario yet.</p>
+            </div>
+          )}
         </section>
 
         {/* Civic Information Disclaimer */}

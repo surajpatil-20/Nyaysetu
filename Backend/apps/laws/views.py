@@ -1,4 +1,6 @@
 from rest_framework import viewsets, permissions, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import LawCategory, LawAct, LawSection, LegalScenario
@@ -56,6 +58,7 @@ class LegalScenarioViewSet(viewsets.ReadOnlyModelViewSet):
         'sections__act'
     ).all().order_by('display_order', 'id')
     permission_classes = [permissions.AllowAny]
+    pagination_class = None  # Return all scenarios cleanly for client-side filtering and counting
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category', 'category__slug', 'is_featured']
     search_fields = [
@@ -73,3 +76,21 @@ class LegalScenarioViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return LegalScenarioDetailSerializer
         return LegalScenarioListSerializer
+
+    @action(detail=True, methods=['get'], url_path='related-cases')
+    def related_cases(self, request, pk=None):
+        """
+        GET /api/laws/scenarios/<id>/related-cases/
+        Returns 5-8 ranked, genuinely relevant authentic Supreme Court cases.
+        """
+        scenario = self.get_object()
+        from .services import get_scenario_related_cases
+        from .serializers import ScenarioRelatedCaseSerializer
+        cases = get_scenario_related_cases(scenario)
+        serializer = ScenarioRelatedCaseSerializer(cases, many=True)
+        return Response({
+            "scenario_id": scenario.id,
+            "scenario_title": scenario.title,
+            "count": len(cases),
+            "related_cases": serializer.data
+        })
