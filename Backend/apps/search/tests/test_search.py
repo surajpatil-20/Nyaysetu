@@ -107,3 +107,87 @@ class HybridSearchAPITest(TestCase):
             self.assertGreater(len(results), 0)
             self.assertGreater(results[0].semantic_score, 0.0)
 
+    def test_search_groups_multiple_chunks_by_unique_case(self):
+        # Add a second chunk to the same case
+        DocumentChunk.objects.create(
+            document=self.doc,
+            chunk_index=1,
+            case=self.case,
+            content="Article 14 equality doctrine prohibits arbitrary state discrimination.",
+            page_number=3,
+            token_count=10,
+            embedding=[0.1] * 768,
+        )
+        resp = self.client.get("/api/search/", {"q": "equality"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        results = data["results"]
+        # Must return exactly 1 unique case, not 2 separate cards
+        self.assertEqual(len(results), 1)
+        self.assertEqual(data["count"], 1)
+        first = results[0]
+        self.assertEqual(first["case_id"], self.case.pk)
+        self.assertIn(1, first["matched_pages"])
+        self.assertIn(3, first["matched_pages"])
+        self.assertEqual(first["matched_chunks_count"], 2)
+
+    def test_search_returns_multiple_unique_cases_for_shared_query(self):
+        # Create a second distinct case also matching 'equality'
+        case2 = Case.objects.create(
+            case_number="SRCH/002/2024",
+            case_title="Second Equality Rights Precedent",
+            court=self.court,
+            status=Case.CaseStatus.DISPOSED,
+            case_type="Civil Appeal",
+        )
+        doc2 = Document.objects.create(
+            case=case2,
+            title="Second Judgment",
+            document_type=Document.DocumentType.JUDGMENT,
+            extraction_status=Document.ExtractionStatus.COMPLETED,
+            extracted_text="Principles of equality under the Constitution.",
+        )
+        DocumentChunk.objects.create(
+            document=doc2,
+            chunk_index=0,
+            case=case2,
+            content="Principles of equality under the Constitution apply equally.",
+            page_number=1,
+            token_count=10,
+            embedding=[0.1] * 768,
+        )
+        resp = self.client.get("/api/search/", {"q": "equality"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        results = data["results"]
+        # Both distinct cases should appear, each exactly once
+        self.assertEqual(len(results), 2)
+        self.assertEqual(data["count"], 2)
+        case_ids = {r["case_id"] for r in results}
+        self.assertEqual(case_ids, {self.case.pk, case2.pk})
+
+    def test_unrelated_query_returns_zero_cases(self):
+        # Queries with no meaningful match in the repository must return 0 results
+        resp = self.client.get("/api/search/", {"q": "unrelated nonmatching person"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 0)
+        self.assertEqual(len(data["results"]), 0)
+
+    def test_exact_citation_metadata_priority(self):
+        # Searching the exact case number / citation retrieves the case
+        resp = self.client.get("/api/search/", {"q": "SRCH/001/2024"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["results"][0]["case_id"], self.case.pk)
+        self.assertGreaterEqual(data["results"][0]["hybrid_score"], 0.5)
+
+    def test_spurious_single_token_rejected_on_multi_term_query(self):
+        # For a 3-word query where only 1 word exists in the DB, it must be rejected
+        resp = self.client.get("/api/search/", {"q": "equality astronaut galaxies"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 0)
+
+

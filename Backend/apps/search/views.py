@@ -67,8 +67,16 @@ class HybridSearchView(APIView):
         except ValueError:
             alpha = 0.5
 
+        group_by_case = request.query_params.get("group_by_case", "true").lower() in ("true", "1", "yes")
+
         try:
-            results = hybrid_search(query, filters=filters, top_k=top_k, alpha=alpha)
+            results = hybrid_search(
+                query,
+                filters=filters,
+                top_k=top_k,
+                alpha=alpha,
+                group_by_case=group_by_case,
+            )
         except Exception as exc:
             logger.exception("Search failed for query '%s': %s", query, exc)
             return Response(

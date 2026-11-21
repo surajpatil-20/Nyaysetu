@@ -4,6 +4,13 @@ Search serializers for NYAYASETU.
 from rest_framework import serializers
 
 
+class SupportingSnippetSerializer(serializers.Serializer):
+    chunk_id = serializers.IntegerField()
+    page_number = serializers.IntegerField(allow_null=True)
+    snippet = serializers.CharField()
+    score = serializers.FloatField(required=False)
+
+
 class EvidenceResultSerializer(serializers.Serializer):
     chunk_id = serializers.IntegerField()
     case_id = serializers.IntegerField()
@@ -19,4 +26,7 @@ class EvidenceResultSerializer(serializers.Serializer):
     hybrid_score = serializers.FloatField()
     source_name = serializers.CharField(allow_null=True)
     source_url = serializers.CharField(allow_null=True)
+    matched_pages = serializers.ListField(child=serializers.IntegerField(), required=False)
+    matched_chunks_count = serializers.IntegerField(required=False)
+    supporting_snippets = SupportingSnippetSerializer(many=True, required=False)
 

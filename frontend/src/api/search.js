@@ -1,7 +1,7 @@
 import { apiRequest } from './client';
 
 export const searchApi = {
-  hybridSearch: async ({ q, court_id, case_type, year, document_type, top_k = 10, alpha = 0.5 }) => {
+  hybridSearch: async ({ q, court_id, case_type, year, document_type, top_k = 10, alpha = 0.5, group_by_case = true }) => {
     const params = new URLSearchParams();
     if (q) params.append('q', q);
     if (court_id) params.append('court_id', court_id);
@@ -10,6 +10,7 @@ export const searchApi = {
     if (document_type) params.append('document_type', document_type);
     if (top_k) params.append('top_k', top_k);
     if (alpha !== undefined) params.append('alpha', alpha);
+    if (group_by_case !== undefined) params.append('group_by_case', group_by_case ? 'true' : 'false');
 
     return apiRequest(`/api/search/?${params.toString()}`);
   },

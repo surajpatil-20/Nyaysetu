@@ -72,6 +72,38 @@ export default function SearchPage() {
     }
   };
 
+  // Deduplicate and group results by unique Case ID ensuring exactly 1 card per case
+  const deduplicateByCase = (items) => {
+    const map = new Map();
+    for (const item of items) {
+      if (!item.case_id) continue;
+      if (!map.has(item.case_id)) {
+        map.set(item.case_id, {
+          ...item,
+          matched_pages: item.matched_pages || (item.page_number ? [item.page_number] : []),
+          matched_chunks_count: item.matched_chunks_count || 1,
+        });
+      } else {
+        const existing = map.get(item.case_id);
+        if ((item.hybrid_score || 0) > (existing.hybrid_score || 0)) {
+          existing.snippet = item.snippet;
+          existing.hybrid_score = item.hybrid_score;
+          existing.page_number = item.page_number;
+          existing.chunk_id = item.chunk_id;
+        }
+        if (item.page_number && !existing.matched_pages.includes(item.page_number)) {
+          existing.matched_pages.push(item.page_number);
+          existing.matched_pages.sort((a, b) => a - b);
+        }
+        existing.matched_chunks_count = Math.max(
+          existing.matched_chunks_count,
+          (existing.matched_chunks_count || 1) + 1
+        );
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => (b.hybrid_score || 0) - (a.hybrid_score || 0));
+  };
+
   const performSearch = async (searchQuery) => {
     if (!searchQuery.trim()) {
       loadAllCases();
@@ -88,8 +120,10 @@ export default function SearchPage() {
         year: endYear !== '2024' || startYear !== '1950' ? endYear : undefined,
         alpha: 0.5,
         top_k: 25,
+        group_by_case: true,
       });
-      setResults(data.results || []);
+      const uniqueCases = deduplicateByCase(data.results || []);
+      setResults(uniqueCases);
     } catch (err) {
       setError(err.message || 'An error occurred while executing search.');
       setResults([]);
@@ -339,7 +373,7 @@ export default function SearchPage() {
                 <p className="search-results-count">
                   {isBrowseMode
                     ? `Displaying ${results.length} Supreme Court case records from 105 indexed precedents`
-                    : `Found ${results.length} result${results.length === 1 ? '' : 's'} for "${query}"`}
+                    : `Found ${results.length} unique precedent${results.length === 1 ? '' : 's'} for "${query}"`}
                 </p>
               </div>
 
